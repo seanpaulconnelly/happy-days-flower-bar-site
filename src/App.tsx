@@ -1,7 +1,5 @@
-import Container from './components/Container';
-import SectionHeading from './components/SectionHeading';
-import { copy } from './content/copy';
 import About from './sections/About';
+import Faq from './sections/Faq';
 import FlowerBarIntro from './sections/FlowerBarIntro';
 import Footer from './sections/Footer';
 import Gallery from './sections/Gallery';
@@ -13,12 +11,11 @@ import Packages from './sections/Packages';
 import WhyHappyDays from './sections/WhyHappyDays';
 
 /**
- * Page shell. Section order and anchor ids are ux-spec §1. Built so far:
- * Header, Hero, Footer (5a), Flower Bar Intro, How It Works, Packages (5b) and
- * Why Happy Days, Gallery, About (5c) and the Inquiry form (5d).
- * The sections still to come render their approved H2 inside a `<Placeholder>`
- * so the anchors, the heading outline and the `aria-labelledby` wiring are real
- * from the first batch; batch 5e replaces the last one (the FAQ) in place.
+ * Page shell. Section order and anchor ids are ux-spec §1. Every section is
+ * built: Header, Hero, Footer (5a), Flower Bar Intro, How It Works, Packages
+ * (5b), Why Happy Days, Gallery, About (5c), the Inquiry form (5d) and the FAQ
+ * (5e), which replaced the last `<Placeholder>` in place. No placeholders
+ * remain, so `check:copy` now enforces all 105 canonical strings.
  *
  * React renders no document metadata and no `ld+json`: the head is injected at
  * build time by the `happy-days-seo-head` plugin in `vite.config.ts` (SEO-1).
@@ -32,41 +29,6 @@ function BucketClipPath() {
         <path d="M.02 0H.98Q1 0 1 .02L.94 .9Q.93 1 .86 1H.14Q.07 1 .06 .9L0 .02Q0 0 .02 0Z" />
       </clipPath>
     </svg>
-  );
-}
-
-function Placeholder({
-  id,
-  heading,
-  surface = 'surface',
-}: {
-  id: string;
-  heading: string;
-  surface?: 'surface' | 'surface-alt' | 'brand';
-}) {
-  const onBrand = surface === 'brand';
-
-  return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-heading`}
-      data-surface={onBrand ? 'brand' : undefined}
-      className={
-        onBrand
-          ? 'bg-surface-brand py-section'
-          : surface === 'surface-alt'
-            ? 'bg-surface-alt py-section'
-            : 'bg-surface py-section'
-      }
-    >
-      <Container>
-        <SectionHeading
-          id={`${id}-heading`}
-          heading={heading}
-          tone={onBrand ? 'on-brand' : 'ink'}
-        />
-      </Container>
-    </section>
   );
 }
 
@@ -93,7 +55,7 @@ export default function App() {
         <WhyHappyDays />
         <Gallery />
         <About />
-        <Placeholder id="faq" heading={copy.faq.heading} />
+        <Faq />
         <Inquiry />
       </main>
       <Footer />

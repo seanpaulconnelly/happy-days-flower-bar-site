@@ -89,7 +89,7 @@ export const images = {
     alt: "Galvanized tin arrangement of blush roses, purple daisies, yellow daisies and baby's breath on a wicker table beside a sheer curtain.",
   },
   about: {
-    src: 'about-bethany-working.jpeg',
+    src: 'about-still-life.jpeg',
     out: 'about-still-life',
     slots: ['about'],
     order: 1,

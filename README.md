@@ -27,6 +27,7 @@ script, so nothing is transformed at request time.
 | `npm run qa`      | Screenshots, axe accessibility scan and Lighthouse against a local preview. Writes into `docs/qa/`.                                |
 | `npm run images`  | Re-generate `public/images/` (+ `og.jpg`, `apple-touch-icon.png`) and `src/content/images.generated.ts` from `assets-src/images/`. |
 | `npm run qa:form` | Drive the inquiry form against the local mock backend in every mode and screenshot each state into `docs/qa/screenshots/form/`.    |
+| mock backend      | `node scripts/mock-inquiry-server.mjs --mode ok`, then `VITE_INQUIRY_ENDPOINT=http://localhost:8787 npm run dev` — the form, live, with no deployed backend ([recipe](#working-on-the-form-locally)). |
 
 Run `npm run check` before every commit and `npm run qa` before a release. Until the
 inquiry endpoint is filled in, use `npm run check -- --allow-todos`, which downgrades
@@ -92,8 +93,8 @@ configuration. Screenshots land in `docs/qa/screenshots/form/` (gitignored).
 
 ## More documentation
 
-- [`docs/HANDOFF.md`](docs/HANDOFF.md) — plain-language guide to changing content (to be written)
-- [`docs/RELEASE.md`](docs/RELEASE.md) — release and domain-cutover runbook (to be written)
+- [`docs/HANDOFF.md`](docs/HANDOFF.md) — plain-language guide to changing content
+- [`docs/RELEASE.md`](docs/RELEASE.md) — release and domain-cutover runbook
 - [`docs/SEARCH-SETUP.md`](docs/SEARCH-SETUP.md) — post-launch Search Console / Business Profile checklist
 - [`integrations/README.md`](integrations/README.md) — inquiry form backends
 - [`CLAUDE.md`](CLAUDE.md) — conventions for maintenance sessions in Claude Code

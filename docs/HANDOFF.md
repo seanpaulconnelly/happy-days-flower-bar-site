@@ -104,16 +104,18 @@ GitHub — only the optimised, resized versions the website actually serves are.
 | Gallery — second image                            | `gallery-event-detail.jpeg`                          |
 | Gallery — third image                             | `gallery-arrangement.jpeg`                           |
 | Gallery — fourth image                            | `gallery-arrangement-outdoor.jpeg`                   |
-| About — "Grown in Greensburg. Made to Be Shared." | the `about` entry's `src` in `src/content/images.ts` |
+| About — "Grown in Greensburg. Made to Be Shared." | `about-still-life.jpeg`                              |
 
-**About that last row.** The About section currently shows the photo your brief
-named for that slot — the glass vase still life with blue delphinium, yellow
-craspedia and pink spray roses against a brick wall. Its file name suggests a
-different, more candid picture, so if you meant a photo of the work in progress
-rather than the still life, that is a one-line fix: point the `about` entry in
-`src/content/images.ts` at whichever file you'd rather use, add that file to
-`assets-src/images/`, update the short description of the picture (the `alt`
-text, which screen readers and Google read), and re-run the image step below.
+**About that last row.** The About section shows the photo your brief named for
+that slot — the glass vase still life with blue delphinium, yellow craspedia and
+pink spray roses against a brick wall. The file arrived under a name that
+suggested a candid picture of someone at work, so it has been renamed to
+`about-still-life.jpeg` to match what is actually in the frame (the same name
+the public files already use). If you did mean a photo of the work in progress
+rather than the still life, that is a one-line fix: save the new picture as
+`about-still-life.jpeg` in `assets-src/images/`, update the short description of
+the picture (the `alt` text in `src/content/images.ts`, which screen readers and
+Google read), and re-run the image step below.
 
 **The hero photo is expected to change.** The one on the page now is a
 placeholder for the new signage photo; when that is ready, drop it in as

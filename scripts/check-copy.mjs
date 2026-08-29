@@ -4,13 +4,15 @@
  * actually rendered on the page (plan Appendix H). React renders client-side,
  * so this reads the DOM under `vite preview` via Playwright, not raw HTML.
  *
- *   node scripts/check-copy.mjs [--url http://...] [--skip-until-phase-5]
+ *   node scripts/check-copy.mjs [--url http://...]
+ *
+ * The rendered text is read as `innerText` + `textContent`, so copy that is
+ * present but not painted - the collapsed `<details>` answers in the FAQ, the
+ * `<option>` labels in the form - still counts as rendered.
  *
  * It also asserts that `public/llms.txt` has not drifted from `copy.ts`
  * (request SEO-7): that file duplicates approved copy by design, so the eight
- * FAQ answers and the four package price strings must still appear in it. That
- * part runs even under --skip-until-phase-5, because llms.txt is static and
- * does not wait for the sections to be built.
+ * FAQ answers and the four package price strings must still appear in it.
  *
  * `copy.ts` is imported directly: Node >= 22.6 strips TypeScript types
  * natively, and this repo runs on a newer Node than that (checked below).
@@ -29,7 +31,6 @@ if (major < 22 || (major === 22 && minor < 6)) {
 }
 
 const args = parseArgs();
-const skip = Boolean(args['skip-until-phase-5']);
 
 const copy = await import('../src/content/copy.ts');
 
@@ -137,15 +138,8 @@ function checkLlmsTxt() {
 
 const expected = canonicalStrings();
 
-// Independent of the rendered page, so it runs in every phase.
+// Independent of the rendered page, so it runs first and without a browser.
 checkLlmsTxt();
-
-if (skip) {
-  console.warn(
-    `check-copy: SKIPPED (--skip-until-phase-5). ${expected.length} canonical string(s) will be enforced once the sections exist.`,
-  );
-  process.exit(0);
-}
 
 const { url, stop } = await ensurePreview(typeof args.url === 'string' ? args.url : undefined);
 const browser = await chromium.launch(launchOptions(chromium));

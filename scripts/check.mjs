@@ -21,8 +21,9 @@ const copyArgs = argv.filter((a) => a !== '--allow-todos');
 // only order that checks the copy actually about to ship.
 //
 // check:copy and check:config go through `npm run` so their package.json
-// definitions stay the single source of truth - that is where the Phase 3
-// `--skip-until-phase-5` flag lives, and where it gets removed in Phase 5.
+// definitions stay the single source of truth. (Phase 3's
+// `--skip-until-phase-5` flag lived there and was removed in Phase 5e, when
+// the FAQ replaced the last placeholder section.)
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 const steps = [

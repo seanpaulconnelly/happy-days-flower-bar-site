@@ -46,6 +46,13 @@
     overflow-x: clip;
   }
 
+  /* FAQ disclosure marker (design-spec §6.13): the row draws its own inline
+     SVG. `list-style: none` via `list-none` hides the triangle everywhere
+     except Safari, which still paints this legacy pseudo-element. */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
