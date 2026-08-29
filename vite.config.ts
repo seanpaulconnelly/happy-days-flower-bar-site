@@ -1,4 +1,5 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -90,9 +91,50 @@ function seoHead(mode: SiteMode, basePath: string): Plugin {
   };
 }
 
+/**
+ * Base-path rewrite for `404.html` (QA-3).
+ *
+ * GitHub Pages serves `public/404.html` for unknown paths, and Vite copies it
+ * out of `publicDir` byte for byte — so its "return home" link stayed `/`,
+ * which is a *different site* for the whole pre-cutover period, when the build
+ * runs with `BASE_PATH=/happy-days-flower-bar-site/`. Rewriting it here rather
+ * than at runtime keeps the shipped page a static file with a correct link and
+ * no script. `closeBundle` runs after the public dir has been copied, so this
+ * edits the emitted copy; the source file keeps a valid `/` for local use.
+ */
+function notFoundBasePath(): Plugin {
+  const MARKER = '<a id="home-link" href="/">';
+  let outDir = 'dist';
+  let basePath = '/';
+  return {
+    name: 'happy-days-404-base',
+    apply: 'build',
+    configResolved(config) {
+      outDir = resolvePath(config.root, config.build.outDir);
+      basePath = config.base;
+    },
+    closeBundle: {
+      order: 'post',
+      sequential: true,
+      handler() {
+        const file = resolvePath(outDir, '404.html');
+        if (!existsSync(file)) return;
+        const html = readFileSync(file, 'utf8');
+        if (!html.includes(MARKER)) {
+          throw new Error(
+            `404.html: expected the home link to be exactly \`${MARKER}\` so its href can be ` +
+              'rewritten to the base path (see public/404.html).',
+          );
+        }
+        writeFileSync(file, html.replace(MARKER, `<a id="home-link" href="${basePath}">`));
+      },
+    },
+  };
+}
+
 export default defineConfig({
   base,
-  plugins: [react(), tailwindcss(), seoHead(siteMode, base)],
+  plugins: [react(), tailwindcss(), seoHead(siteMode, base), notFoundBasePath()],
   define: {
     'import.meta.env.VITE_SITE_MODE': JSON.stringify(siteMode),
   },

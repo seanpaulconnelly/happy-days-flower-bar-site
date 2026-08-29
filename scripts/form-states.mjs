@@ -193,6 +193,26 @@ try {
       await page.locator('#inquiry-eventTypeOther').isHidden(),
     );
 
+    // UX-1: blur of a required field the visitor never typed in stays quiet…
+    await page.focus('#inquiry-name');
+    await page.focus('#inquiry-organization');
+    await page.waitForTimeout(150);
+    assert(
+      'idle: blurring an untouched required field shows no error (UX-1)',
+      (await page.locator('#inquiry-name-error').count()) === 0,
+    );
+    // …while the format rules, which need typed content, still fire on blur.
+    await page.fill('#inquiry-email', 'not-an-email');
+    await page.focus('#inquiry-name');
+    await page.waitForTimeout(150);
+    const emailError = await page.locator('#inquiry-email-error').innerText();
+    assert(
+      'idle: a format rule still fires on blur (UX-1)',
+      emailError.includes('Enter a valid email address'),
+      emailError.trim(),
+    );
+    await page.fill('#inquiry-email', '');
+
     await page.click('#inquire button[type="submit"]');
     await page.waitForTimeout(200);
     const summary = await page.locator('#inquire [role="alert"]').innerText();
@@ -258,6 +278,11 @@ try {
       text.includes('We received your inquiry and can’t wait to hear more'),
     );
     assert(
+      `${mode}: the greeting appears once, not twice (D16)`,
+      text.split(`Thanks, ${FILLED.name}!`).length === 2,
+      text.replace(/\n+/g, ' | '),
+    );
+    assert(
       `${mode}: focus moved to the confirmation heading`,
       focused.includes('Thanks,'),
       focused,
@@ -296,8 +321,8 @@ try {
     const focused = await page.evaluate(() => document.activeElement?.textContent ?? '');
     if (mode === 'error') await shot(page, 'error');
 
-    assert(`${mode}: error panel shown`, text.includes("We couldn't send your inquiry."));
-    assert(`${mode}: focus moved to the error heading`, focused.includes("couldn't send"), focused);
+    assert(`${mode}: error panel shown`, text.includes('We couldn’t send your inquiry.'));
+    assert(`${mode}: focus moved to the error heading`, focused.includes('couldn’t send'), focused);
     assert(
       `${mode}: prefilled mailto offered`,
       Boolean(mailto) &&

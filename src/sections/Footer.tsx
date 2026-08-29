@@ -27,13 +27,15 @@ export default function Footer() {
       <Container>
         {/* The name and the place/service-area line are one identity block, so
             the links can never split them on mobile (ux-spec §4.10, design
-            review 5a-06). At `md` the links centre against the two-line block. */}
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            review 5a-06). The row needs ~720 px, so it becomes a row at `lg`,
+            not `md` — at 768 the place line split into two ragged columns and
+            the links wrapped (design review 5f-03, design-spec §6.12). */}
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <Wordmark variant="footer" />
-            <p className="mt-4 flex flex-col text-small text-ink-muted md:flex-row md:items-center md:gap-2">
+            <p className="mt-4 flex flex-col text-small text-ink-muted lg:flex-row lg:items-center lg:gap-2">
               <span>{place}</span>
-              <span aria-hidden="true" className="hidden md:inline">
+              <span aria-hidden="true" className="hidden lg:inline">
                 ·
               </span>
               <span>{serviceArea}</span>

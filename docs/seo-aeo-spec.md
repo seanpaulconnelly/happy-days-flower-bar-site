@@ -24,9 +24,9 @@ none exists in an approved source.
 | Canonical URL                     | `https://happydaysflowers.com/` — apex, `www` redirects to apex              | Plan §8 Q6                                     |
 | Preview host                      | `https://seanpaulconnelly.github.io/happy-days-flower-bar-site/` — `noindex` | Plan §8 Q14, decision D5                       |
 | AI crawlers in `robots.txt`       | **Allowed**, all of them                                                     | Plan §8 Q19                                    |
-| Package prices in structured data | **Yes**, as `Offer`s                                                         | Owner answers §3b; plan §8 Q20                       |
-| Business model in markup          | Service-area business; locality + region only, **no** street address         | Owner answers §3c (GBP Option B)                     |
-| Phone / hours                     | Not published anywhere, on the site or in markup                             | Owner answers §3c                                    |
+| Package prices in structured data | **Yes**, as `Offer`s                                                         | Owner answers §3b; plan §8 Q20                 |
+| Business model in markup          | Service-area business; locality + region only, **no** street address         | Owner answers §3c (GBP Option B)               |
+| Phone / hours                     | Not published anywhere, on the site or in markup                             | Owner answers §3c                              |
 | FAQ in V1                         | Yes, 8 approved Q&As, `FAQPage` JSON-LD                                      | Plan §8 Q18                                    |
 | FAQ placement                     | Position 8, between About and Inquiry (`#faq`)                               | `docs/ux-spec.md` §1.1                         |
 | FAQ interaction                   | Native `<details>`/`<summary>`, all answers in the DOM at first render       | `docs/ux-spec.md` §1.2                         |
@@ -46,12 +46,12 @@ three static files in `public/`, and the structured-data graph.
 
 Fetched 2026-08-29 from the four reference URLs in `1-genesis/…/websites.md`:
 
-| Site                                  | Market          | Title pattern                                                                                          | Prices?                          | FAQ?       | Take-away for us                                                                                                                                                                                           |
-| ------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Roots to Petals (Oakmont, PA)         | **Our market**  | "Event Flowers & Flower Bar Services \| Roots to Petals"; H1 "Premier Pittsburgh Florist & Plant Shop" | "Packages begin at $400"         | No         | The only Pittsburgh-area result and it is a **retail florist** with a flower bar as one line item. Nobody local owns "pop-up flower bar" as an entity. That is the opening.                                |
-| Flair Flower Bar (Cincinnati / N. KY) | Direct analogue | "FLAIR Flower Bar Rental \| Private & Corporate Events in Cincinnati, OH & Northern KY"                | 4 tiers, $465–$1,050 + per-guest | No         | Service + geo in the title, and an explicit city/ZIP list on the page. Their guest-tier structure is the same as ours.                                                                                     |
+| Site                                  | Market          | Title pattern                                                                                          | Prices?                          | FAQ?       | Take-away for us                                                                                                                                                                                             |
+| ------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Roots to Petals (Oakmont, PA)         | **Our market**  | "Event Flowers & Flower Bar Services \| Roots to Petals"; H1 "Premier Pittsburgh Florist & Plant Shop" | "Packages begin at $400"         | No         | The only Pittsburgh-area result and it is a **retail florist** with a flower bar as one line item. Nobody local owns "pop-up flower bar" as an entity. That is the opening.                                  |
+| Flair Flower Bar (Cincinnati / N. KY) | Direct analogue | "FLAIR Flower Bar Rental \| Private & Corporate Events in Cincinnati, OH & Northern KY"                | 4 tiers, $465–$1,050 + per-guest | No         | Service + geo in the title, and an explicit city/ZIP list on the page. Their guest-tier structure is the same as ours.                                                                                       |
 | Garden Muses (DC / DMV)               | Direct analogue | "Pop Up Floral Bar for Corporate Events & Private Gatherings in Washington, DC"                        | Per-person tiers                 | **7 Q&As** | Their FAQ is ~6/8 the same questions the owner answered independently. Strong confirmation these are the real buyer questions. Their FAQ sits _after_ the form; ours sits before it (ux-spec §1.1) — better. |
-| Blossom Flower Bar (Cleveland)        | Brand reference | Retail-led, multi-location                                                                             | No                               | No         | Taste reference only; not a competitor for our query set.                                                                                                                                                  |
+| Blossom Flower Bar (Cleveland)        | Brand reference | Retail-led, multi-location                                                                             | No                               | No         | Taste reference only; not a competitor for our query set.                                                                                                                                                    |
 
 Two of the three flower-bar specialists publish prices and put the service plus
 the metro in the title. Both patterns are already in our plan. None of the four
@@ -430,9 +430,14 @@ it is where `lastmod` lives. Keep it.
 
 A plain-Markdown summary at `/llms.txt`: what the business is, where it is, the
 service, the four packages with prices, the service area, all eight Q&As, the
-"Why Happy Days" points, and how to make contact. **Every sentence is verbatim
-approved copy** from `website-spec.md` or `owner-answers.md`, plus the
-decided facts (canonical URL, email, socials). It ends by stating what is _not_
+"Why Happy Days" points, and how to make contact. **Every business fact is
+verbatim approved copy** from `website-spec.md` or `owner-answers.md`, plus the
+decided facts (canonical URL, email, socials). A few connective sentences are
+authored for this file — the opening summary, the fact bullets, the contact
+framing and the "not offered in this version" list; they restate approved
+decisions (owner answers §3c: service-area business, no published phone, no
+retail hours) and add no new fact. Treat them as copy: review them when the
+approved sources change. It ends by stating what is _not_
 available — no phone, no address, no hours, no online booking — because a
 "no phone number listed" statement prevents an assistant from confidently
 hallucinating one.
@@ -702,13 +707,13 @@ where the widely-supported format is the right default.
 
 Nothing in this list has been implemented. All of it is optional.
 
-| #   | Item                                                                                              | Who approves       | Recommendation                                                                                                                                                                     |
-| --- | ------------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #   | Item                                                                                              | Who approves     | Recommendation                                                                                                                                                                     |
+| --- | ------------------------------------------------------------------------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A1  | FAQ section heading. Neither source supplies one. Proposed: **"Frequently Asked Questions"**.     | Owner (via Sean) | **Ship it.** Plain, entity-clear, universally understood. "Flower Bar FAQ" is a reasonable alternative; "Good to Know" and similar are worse for search because they name nothing. |
-| A2  | Alternative `<title>`: `Pop-Up Flower Bars in Pittsburgh & Western PA \| Happy Days Flower Farm`. | Sean               | **Not for launch.** Ship the approved title; revisit as a measured experiment ~90 days after launch (§3).                                                                          |
+| A2  | Alternative `<title>`: `Pop-Up Flower Bars in Pittsburgh & Western PA \| Happy Days Flower Farm`. | Sean             | **Not for launch.** Ship the approved title; revisit as a measured experiment ~90 days after launch (§3).                                                                          |
 | A3  | Adding "Pittsburgh" to a visible heading or the hero paragraph.                                   | Owner            | **No.** The copy is approved and reads well. §2.4 lever 2 gets most of the benefit for free.                                                                                       |
-| A4  | Renaming the optimised output of `about-still-life.*` (§12).                                 | Sean / engineer    | Minor; do it if it is free.                                                                                                                                                        |
-| A5  | A dedicated `/pittsburgh` service page.                                                           | Sean               | **V2, not now.** Only if Search Console shows Pittsburgh impressions with weak position after ~90 days. It would need new copy from the owner.                                       |
+| A4  | Renaming the optimised output of `about-still-life.*` (§12).                                      | Sean / engineer  | Minor; do it if it is free.                                                                                                                                                        |
+| A5  | A dedicated `/pittsburgh` service page.                                                           | Sean             | **V2, not now.** Only if Search Console shows Pittsburgh impressions with weak position after ~90 days. It would need new copy from the owner.                                     |
 
 ---
 

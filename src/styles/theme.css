@@ -210,4 +210,11 @@
   [data-surface="brand"] {
     --color-focus: var(--color-on-brand);
   }
+
+  /* A light card inside a brand section (the inquiry form) takes the green ring
+     back — the warm-white ring would be invisible on warm white (design review
+     5f-01, design-spec §6.15). */
+  [data-surface="light"] {
+    --color-focus: var(--color-green);
+  }
 }

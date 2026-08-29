@@ -46,7 +46,9 @@ function Marker() {
       viewBox="0 0 20 20"
       aria-hidden="true"
       focusable="false"
-      className="mt-1.5 size-5 shrink-0 text-brand transition-transform duration-200 ease-soft group-open:rotate-45"
+      // A rotated plus keeps its bounding box but reads ~15% smaller than the
+      // upright one, so the × is scaled back up to match (design review 5f-04).
+      className="mt-1.5 size-5 shrink-0 text-brand transition-transform duration-200 ease-soft group-open:scale-110 group-open:rotate-45"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.5"

@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,7 +35,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 
-async function waitForPort(url, timeoutMs = 60000) {
+async function waitForPort(url, { timeoutMs = 60000, isDead = () => false } = {}) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
@@ -43,14 +44,32 @@ async function waitForPort(url, timeoutMs = 60000) {
     } catch {
       // not up yet
     }
+    if (isDead()) return false;
     await new Promise((r) => setTimeout(r, 300));
   }
   return false;
 }
 
+/** True when nothing is listening on `port` — checked by trying to bind it. */
+function portIsFree(port) {
+  return new Promise((done) => {
+    const probe = createServer();
+    probe.once('error', () => done(false));
+    probe.once('listening', () => probe.close(() => done(true)));
+    probe.listen(port, '127.0.0.1');
+  });
+}
+
 /**
  * Returns `{ url, stop }`. When `explicitUrl` is given nothing is spawned.
  * Otherwise `vite preview` is started, waited for, and killed on exit.
+ *
+ * QA-4: the harness must never audit a server it did not start. `--strictPort`
+ * makes vite exit when 4173 is taken, and the old code ignored both that exit
+ * and the child's stderr, so `waitForPort` would succeed against whatever
+ * foreign process held the port — reporting a confident pass (or a confident
+ * `0/105`) against the wrong build. So: probe the port before spawning, keep
+ * the child's stderr, and fail the moment it exits.
  */
 export async function ensurePreview(explicitUrl) {
   if (explicitUrl) return { url: explicitUrl, stop: async () => {} };
@@ -59,9 +78,32 @@ export async function ensurePreview(explicitUrl) {
     throw new Error('dist/ is missing - run `npm run build` first (or pass --url).');
   }
 
+  if (!(await portIsFree(PREVIEW_PORT))) {
+    throw new Error(
+      `port ${PREVIEW_PORT} is already in use — something else is listening there, and this ` +
+        'script will not audit a server it did not start. Stop it (`pkill -f "vite preview"`) ' +
+        'and re-run.',
+    );
+  }
+
   const child = spawn('npx', ['vite', 'preview', '--port', String(PREVIEW_PORT), '--strictPort'], {
     cwd: repoRoot,
-    stdio: 'ignore',
+    stdio: ['ignore', 'ignore', 'pipe'],
+  });
+
+  let stderr = '';
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', (chunk) => {
+    stderr += chunk;
+    process.stderr.write(chunk);
+  });
+
+  let exit = null;
+  child.on('exit', (code, signal) => {
+    exit = { code, signal };
+  });
+  child.on('error', (error) => {
+    exit = { code: null, signal: null, error };
   });
 
   const url = `http://localhost:${PREVIEW_PORT}${basePath()}`;
@@ -77,9 +119,12 @@ export async function ensurePreview(explicitUrl) {
     process.exit(130);
   });
 
-  if (!(await waitForPort(url))) {
+  if (!(await waitForPort(url, { isDead: () => exit !== null }))) {
     await stop();
-    throw new Error(`vite preview did not come up at ${url}`);
+    const why = exit
+      ? `vite preview exited (code ${exit.code}, signal ${exit.signal})`
+      : `vite preview did not come up at ${url}`;
+    throw new Error(stderr.trim() ? `${why}:\n${stderr.trim()}` : why);
   }
   return { url, stop };
 }
@@ -142,10 +187,7 @@ export async function waitForPaint(page) {
             img.addEventListener('error', done, { once: true });
           }),
       );
-    await Promise.race([
-      Promise.all(settled),
-      new Promise((done) => setTimeout(done, 10000)),
-    ]);
+    await Promise.race([Promise.all(settled), new Promise((done) => setTimeout(done, 10000))]);
   });
   await page.waitForTimeout(200);
 }

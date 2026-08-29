@@ -21,9 +21,12 @@ import type { InquiryNonce, InquiryPayload } from '../lib/inquiry/types';
  *
  * Validation runs in JS with `noValidate` on the form so the messages are the
  * spec's, identical in every browser; the native constraint attributes stay on
- * the controls as the no-JS fallback. Fields validate on blur once touched and
- * again on submit; a failed submit shows the summary line and moves focus to
- * the first invalid control in DOM order, never losing what was typed.
+ * the controls as the no-JS fallback. Blur runs the *format* rules only — a
+ * `required` message waits until the field has actually held a value or a
+ * submit has been attempted, so tabbing through the form to read it never
+ * paints six errors before a character is typed (UX-1). A failed submit shows
+ * the summary line and moves focus to the first invalid control in DOM order,
+ * never losing what was typed.
  *
  * **Success is shown only on a confirmed `{ ok: true }`** (plan §3.2). Every
  * other outcome — network, CORS, 5xx, an unconfigured endpoint, an explicit
@@ -158,6 +161,22 @@ function resolved(values: Values): Resolved {
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
+/**
+ * Split the approved auto-reply at the end of its first sentence (D16).
+ *
+ * The success panel renders the paragraph verbatim, in order: the first
+ * sentence becomes the `<h3>` — so the panel has a heading to focus and
+ * announce — and the remainder becomes the body. Nothing is added, removed or
+ * repeated, which is what D9 as written could not manage (QA-2 / 5f-08).
+ */
+function splitFirstSentence(text: string): { first: string; rest: string } {
+  const end = text.search(/[.!?](\s|$)/);
+  if (end === -1) return { first: text, rest: '' };
+  return { first: text.slice(0, end + 1), rest: text.slice(end + 1).trim() };
+}
+
+const AUTO_REPLY = splitFirstSentence(autoReply.body);
+
 export default function Inquiry() {
   const [values, setValues] = useState<Values>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
@@ -177,6 +196,12 @@ export default function Inquiry() {
   const nonce = useRef<InquiryNonce | undefined>(undefined);
   /** Set once "Other" has been chosen, so focus moves into the box only then. */
   const revealedOther = useRef(false);
+  /**
+   * Keys the visitor has actually put a value into. A `required` error is only
+   * useful once someone has had a chance to be right, so blur stays quiet on a
+   * field that is still empty and has never held anything (UX-1).
+   */
+  const dirty = useRef<Set<ValueKey>>(new Set());
 
   // Signed nonce, best effort. A failure here is invisible and harmless: the
   // POST goes without it and the server treats that as one flag, not a reject.
@@ -198,6 +223,7 @@ export default function Inquiry() {
   }, [status]);
 
   function setValue(key: ValueKey, value: string) {
+    if (value.trim()) dirty.current.add(key);
     const next = { ...values, [key]: value };
     setValues(next);
     // "Messages clear as soon as the field becomes valid" (ux-spec §6.3) — but
@@ -205,8 +231,36 @@ export default function Inquiry() {
     if (errors[key]) setErrors({ ...errors, [key]: validate(next)[key] });
   }
 
+  /**
+   * UX-5: leaving "Other" hides the text box, so its error has to go with it —
+   * otherwise choosing "Other" again reveals a field that is already red before
+   * the visitor has typed anything.
+   */
+  function setEventType(value: string) {
+    if (value.trim()) dirty.current.add('eventType');
+    const leavingOther = value !== OTHER;
+    if (leavingOther) dirty.current.delete('eventTypeOther');
+
+    const next: Values = {
+      ...values,
+      eventType: value,
+      eventTypeOther: leavingOther ? '' : values.eventTypeOther,
+    };
+    setValues(next);
+
+    const nextErrors: Errors = { ...errors };
+    if (errors.eventType) nextErrors.eventType = validate(next).eventType;
+    if (leavingOther) delete nextErrors.eventTypeOther;
+    setErrors(nextErrors);
+  }
+
   function validateOnBlur(key: ValueKey) {
-    setErrors({ ...errors, [key]: validate(values)[key] });
+    // Only the `required` rules can fire on an empty field, so "empty, never
+    // filled, no submit yet" is exactly the case that must stay silent (UX-1).
+    // Everything else — email shape, phone digits, a past date, a fractional
+    // guest count — needs typed content and still validates on blur.
+    const untouched = !values[key].trim() && !dirty.current.has(key) && !showSummary;
+    setErrors({ ...errors, [key]: untouched ? undefined : validate(values)[key] });
   }
 
   function reset() {
@@ -218,6 +272,7 @@ export default function Inquiry() {
     mountedAt.current = Date.now();
     interacted.current = false;
     revealedOther.current = false;
+    dirty.current = new Set();
     if (honeypotRef.current) honeypotRef.current.value = '';
     // The restored form is empty, so the first thing to do in it is type a name.
     window.requestAnimationFrame(() => nameRef.current?.focus());
@@ -270,10 +325,14 @@ export default function Inquiry() {
   const submitting = status === 'submitting';
   const success = status === 'success';
   const failed = status === 'error';
+  // D16: heading + body are the one approved auto-reply paragraph, split at its
+  // first sentence and rendered in order. With no name (unreachable after
+  // validation) the ux-spec §6.4 fallback heading stands in for a sentence that
+  // would otherwise still carry the `{name}` placeholder.
   const heading = sentName
-    ? formStatus.successHeading.replace('{name}', sentName)
+    ? AUTO_REPLY.first.replace('{name}', sentName)
     : formStatus.successHeadingFallback;
-  const body = sentName ? autoReply.body.replace('{name}', sentName) : autoReply.body;
+  const body = AUTO_REPLY.rest;
 
   return (
     <section
@@ -293,6 +352,11 @@ export default function Inquiry() {
         <form
           ref={formRef}
           noValidate
+          // A warm-white card inside the brand section: the section's warm-white
+          // focus ring would be invisible on it, so the card takes the green
+          // ring back (design review 5f-01, design-spec §6.15). The submit stays
+          // orange + charcoal because `onBrand` is passed explicitly below.
+          data-surface="light"
           aria-busy={submitting || undefined}
           onSubmit={handleSubmit}
           onPointerDown={() => {
@@ -319,7 +383,9 @@ export default function Inquiry() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="text-body mt-4 font-medium text-brand-ink underline underline-offset-4"
+                  // 44 px hit area like every other link on the page; the
+                  // negative margin keeps the panel's rhythm (5f-06 / UX-3).
+                  className="text-body mt-2 -mb-2 inline-flex min-h-tap items-center font-medium text-brand-ink underline underline-offset-4"
                 >
                   {formStatus.successAgain}
                 </button>
@@ -337,6 +403,7 @@ export default function Inquiry() {
                   ref={nameRef}
                   type="text"
                   name="name"
+                  readOnly={submitting}
                   value={values.name}
                   onChange={(e) => setValue('name', e.target.value)}
                   onBlur={() => validateOnBlur('name')}
@@ -353,6 +420,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('organization'))}
                   type="text"
                   name="organization"
+                  readOnly={submitting}
                   value={values.organization}
                   onChange={(e) => setValue('organization', e.target.value)}
                   maxLength={120}
@@ -366,6 +434,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('email'), errors.email)}
                   type="email"
                   name="email"
+                  readOnly={submitting}
                   value={values.email}
                   onChange={(e) => setValue('email', e.target.value)}
                   onBlur={() => validateOnBlur('email')}
@@ -385,6 +454,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('phone'), errors.phone)}
                   type="tel"
                   name="phone"
+                  readOnly={submitting}
                   value={values.phone}
                   onChange={(e) => setValue('phone', e.target.value)}
                   onBlur={() => validateOnBlur('phone')}
@@ -405,6 +475,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('eventDate'), errors.eventDate)}
                   type="date"
                   name="eventDate"
+                  readOnly={submitting}
                   value={values.eventDate}
                   onChange={(e) => setValue('eventDate', e.target.value)}
                   onBlur={() => validateOnBlur('eventDate')}
@@ -426,6 +497,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('eventLocation'), errors.eventLocation)}
                   type="text"
                   name="eventLocation"
+                  readOnly={submitting}
                   value={values.eventLocation}
                   onChange={(e) => setValue('eventLocation', e.target.value)}
                   onBlur={() => validateOnBlur('eventLocation')}
@@ -446,9 +518,10 @@ export default function Inquiry() {
                 <select
                   {...controlProps(fieldId('eventType'), errors.eventType)}
                   name="eventType"
+                  disabled={submitting}
                   value={values.eventType}
                   onChange={(e) => {
-                    setValue('eventType', e.target.value);
+                    setEventType(e.target.value);
                     if (e.target.value === OTHER && !revealedOther.current) {
                       revealedOther.current = true;
                       window.requestAnimationFrame(() => otherRef.current?.focus());
@@ -488,6 +561,7 @@ export default function Inquiry() {
                   ref={otherRef}
                   type="text"
                   name="eventTypeOther"
+                  readOnly={submitting}
                   value={values.eventTypeOther}
                   onChange={(e) => setValue('eventTypeOther', e.target.value)}
                   onBlur={() => validateOnBlur('eventTypeOther')}
@@ -509,6 +583,7 @@ export default function Inquiry() {
                   {...controlProps(fieldId('guestCount'), errors.guestCount)}
                   type="number"
                   name="guestCount"
+                  readOnly={submitting}
                   value={values.guestCount}
                   onChange={(e) => setValue('guestCount', e.target.value)}
                   onBlur={() => validateOnBlur('guestCount')}
@@ -526,6 +601,7 @@ export default function Inquiry() {
                 <textarea
                   {...controlProps(fieldId('notes'))}
                   name="notes"
+                  readOnly={submitting}
                   rows={4}
                   value={values.notes}
                   onChange={(e) => setValue('notes', e.target.value)}
@@ -568,7 +644,8 @@ export default function Inquiry() {
                 <p className="text-body mt-3">{formStatus.errorBody}</p>
                 <a
                   href={mailtoHref(resolved(values), site.email)}
-                  className="text-body mt-3 inline-block font-medium text-brand-ink underline underline-offset-4"
+                  // 44 px hit area (5f-06 / UX-3), replacing `inline-block`.
+                  className="text-body mt-1 -mb-2 inline-flex min-h-tap items-center font-medium text-brand-ink underline underline-offset-4"
                 >
                   {formStatus.errorMailto}
                 </a>

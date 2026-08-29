@@ -42,7 +42,15 @@ export function controlProps(id: string, error?: string) {
   };
 }
 
-/** The §6.9 error border, appended to the control's class list when invalid. */
+/**
+ * The §6.9 error border, appended to the control's class list when invalid.
+ *
+ * `focus:border-danger` is what keeps the *focused* invalid field red: focus
+ * lands on the first invalid control after a failed submit, and `CONTROL_BASE`'s
+ * `focus:border-brand` sorts after `border-danger` in the generated stylesheet,
+ * so without this the one field the visitor is looking at is the only invalid
+ * one that does not look invalid (design review 5f-02).
+ */
 export function errorRing(error?: string): string | undefined {
-  return error ? 'border-[1.5px] border-danger' : undefined;
+  return error ? 'border-[1.5px] border-danger focus:border-danger' : undefined;
 }

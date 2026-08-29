@@ -36,6 +36,12 @@
   </head>
   <body>
     <h1>Page not found</h1>
-    <p><a href="/">Return to the home page</a></p>
+    <!-- The href is rewritten to the build's base path in dist/ by the
+         `happy-days-404-base` plugin in vite.config.ts (QA-3): before the DNS
+         cutover the site lives under /happy-days-flower-bar-site/, where "/"
+         would send the visitor to a different site. Keep the id and the exact
+         `href="/"` spelling — the plugin matches this element literally and
+         fails the build if it stops finding it. -->
+    <p><a id="home-link" href="/">Return to the home page</a></p>
   </body>
 </html>
