@@ -6,7 +6,9 @@ Single-page marketing site. Vite 8 · React 19 · Tailwind 4 · TypeScript. Depl
 - Config (email, socials, inquiry provider/endpoint, SEO title/description): `src/config/site.ts`.
 - **Design tokens: `@theme` in `src/styles/theme.css`**, imported by `src/styles/index.css` (see `docs/design-spec.md`). Tokens live in `theme.css`, app-level CSS in `index.css`. Don't add ad-hoc colours or fonts.
 - Images: put originals in `assets-src/images/` (gitignored — originals are never committed), run `npm run images`, commit `public/images/` + `src/content/images.generated.ts`.
-- **Before committing: `npm run check`.** Use `npm run check -- --allow-todos` while `src/config/site.ts` still has `TODO_` placeholders (the Apps Script `/exec` URL is the last one); drop the flag once it is set. CI runs the same command. Before releasing: `npm run qa`.
+- **Before committing: `npm run check`** (strict — no `TODO_` placeholders remain; CI runs the same). Before releasing: `npm run qa`.
+- **Brand name:** the site says **Happy Days Flowers** everywhere (D22). The only place the legal entity appears is the footer copyright, `© Happy Days Flower Farm, LLC`, from `site.legalName`. `alternateName` in JSON-LD keeps the old name searchable — don't remove it.
+- **Inquiry endpoint = row append only** (D19): no mail scope, no notifications from the site (D20). Don't add `MailApp`/`UrlFetchApp` to `integrations/apps-script/Code.gs` without a decision row.
 - FAQ: the order of `copy.faq.items` **is** the display order and the JSON-LD order, fixed by `docs/seo-aeo-spec.md` §11.1. Render and serialise from that one array — don't reorder it or introduce an index map. Question and answer text is verbatim.
 - SEO head and JSON-LD are injected into `index.html` at **build time** from `src/seo/` (crawlers don't run JS). React must render no metadata and no `ld+json`.
 - Inquiry backend: `integrations/apps-script/` (primary) or `integrations/web3forms/`. No secrets exist in this repo by design.
