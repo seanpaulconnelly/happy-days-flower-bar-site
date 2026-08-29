@@ -32,7 +32,7 @@ export const site = {
   },
   contact: { phone: '', streetAddress: '' }, // service-area business: none published in V1
   seo: {
-    title: 'Happy Days Flower Farm | Pop-Up Flower Bars in Western PA',
+    title: 'Pop-Up Flower Bars in Pittsburgh, PA | Happy Days Flower Farm', // Sean, 2026-08-29 (D21): city-first for local search
     description:
       'Unique floral experiences and turnkey pop-up flower bars for businesses, events and gatherings in Greensburg, Pittsburgh and throughout Western Pennsylvania.',
     exposePricesInStructuredData: true,
