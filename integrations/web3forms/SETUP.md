@@ -87,12 +87,13 @@ the prefilled `mailto:` fallback.
 | ------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Cost                      | Free                                                                      | Free tier: **250 submissions/month**, unlimited forms                                                       |
 | Record of leads           | Google Sheet (`Inquiries` + `Quarantine` tabs), owned by the business     | Email only (Sheets sync is Pro)                                                                             |
-| Auto-reply to the visitor | Yes, the owner's approved wording                                         | Not on the free tier — the adapter does not send one                                                        |
+| Auto-reply to the visitor | Not sent by the site — an inbox rule handles it (D19)                     | Not on the free tier either — the adapter does not send one                                                 |
 | Spam handling             | Honeypot + timing + nonce + content flags → quarantine, never a rejection | Web3Forms' own filtering plus the `botcheck` honeypot; a flagged submission is **dropped**, not quarantined |
-| Daily quarantine digest   | Yes                                                                       | No                                                                                                          |
+| How you hear about a lead | Google Sheets' own notification rule, on any change to either tab         | Web3Forms emails the verified inbox directly                                                                |
 | Secrets in the repo       | None                                                                      | None                                                                                                        |
 
-The last two rows are the reason this is a fallback: the "a real lead can never be lost" rule
+The **Record of leads** and **Spam handling** rows are the reason this is a fallback: the
+"a real lead can never be lost" rule
 (build plan §3.2) can only be fully honoured by the Apps Script backend, which saves every
 submission before deciding anything. On Web3Forms, a false-positive spam classification is
 invisible. If the site runs on this provider for any length of time, send a test submission

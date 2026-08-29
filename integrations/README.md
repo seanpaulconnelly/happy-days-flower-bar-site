@@ -1,8 +1,17 @@
 # Inquiry form backends
 
 - **Primary: Google Apps Script** — `apps-script/Code.gs` appends every submission to a Google
-  Sheet the business owns, then emails `hello@happydaysflowers.com` and auto-replies to the
-  visitor. Deploy it with `apps-script/SETUP.md` (~15 min, one-time).
+  Sheet the business owns, and does nothing else. It **sends no email**: the manifest declares
+  one scope (`spreadsheets.currentonly`, "only the specific Google Sheets files this script is
+  attached to"), so a publicly callable endpoint holds no permission to send mail. Deploy it
+  with `apps-script/SETUP.md` (~12 min, one-time).
+- **Notifications come from Google Sheets, not from the script** — the owner sets the
+  spreadsheet's own rule (_Tools → Notification settings → Edit notifications_ → _Any changes
+  are made_ → _Email - right away_), and Google emails a link to the sheet whenever a row lands
+  in either tab. Both `Inquiries` and `Quarantine` notify, so nothing waits for a summary.
+- **The auto-reply to the visitor is not a website deliverable.** It is a rule on the inquiry
+  inbox, owned outside this repo. The approved wording is still shown on screen in the form's
+  success panel (`src/content/formCopy.ts`).
 - **Fallback: Web3Forms** — `web3forms/SETUP.md`. Use it only if a Workspace policy blocks the
   Apps Script web app. Email only, no Sheet.
 - **Switching providers is one line** in `src/config/site.ts`: `inquiry.provider` becomes

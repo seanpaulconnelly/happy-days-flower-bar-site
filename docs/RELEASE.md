@@ -420,8 +420,11 @@ Accessibility 100, Best Practices ≥ 95, SEO 100.
 
 1. 🧑 Deploy the script by following
    [`integrations/apps-script/SETUP.md`](../integrations/apps-script/SETUP.md)
-   (~15 min, signed in to the Happy Days Google account). That document is the
-   click-by-click source — it is not duplicated here.
+   (~12 min, signed in to the Happy Days Google account). That document is the
+   click-by-click source — it is not duplicated here. Note that the script sends
+   no email (one OAuth scope, `spreadsheets.currentonly`); §6 of that document
+   turns on the spreadsheet's own notification rule instead, and it must be set
+   from the Happy Days account because Sheets notification rules are per user.
 2. Paste the resulting `/exec` URL into `src/config/site.ts`:
 
    ```ts
@@ -444,9 +447,11 @@ check` is the gate. Also remove the flag from the `npm run check` step in
    protection.
 
 4. Commit and push. Then run a real submission from `npm run preview` and a
-   deliberately "botty" one, and confirm the `Inquiries` and `Quarantine` rows,
-   the notification email and the auto-reply — the verification steps are in
-   §7 of `SETUP.md`.
+   deliberately "botty" one, and confirm the `Inquiries` and `Quarantine` rows
+   plus Google's "spreadsheet was updated" email for each — the verification
+   steps are in §7 and §8 of `SETUP.md`. No email comes from the script itself,
+   and the visitor gets no reply from it; the auto-reply is an inbox rule handled
+   outside this repo (decision D19).
 
 If a Workspace policy blocks "Anyone" access to the web app, switch
 `inquiry.provider` to `'web3forms'` and put the access key in `endpoint`

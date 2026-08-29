@@ -18,15 +18,15 @@ script, so nothing is transformed at request time.
 
 ## Commands
 
-| Command           | What it does                                                                                                                       |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`     | Vite dev server with HMR.                                                                                                          |
-| `npm run build`   | Typecheck, then build to `dist/`.                                                                                                  |
-| `npm run preview` | Serve the built `dist/` locally — the closest thing to production.                                                                 |
-| `npm run check`   | The pre-commit gate: typecheck → lint → config check → build → copy check.                                                         |
-| `npm run qa`      | Screenshots, axe accessibility scan and Lighthouse against a local preview. Writes into `docs/qa/`.                                |
-| `npm run images`  | Re-generate `public/images/` (+ `og.jpg`, `apple-touch-icon.png`) and `src/content/images.generated.ts` from `assets-src/images/`. |
-| `npm run qa:form` | Drive the inquiry form against the local mock backend in every mode and screenshot each state into `docs/qa/screenshots/form/`.    |
+| Command           | What it does                                                                                                                                                                                          |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`     | Vite dev server with HMR.                                                                                                                                                                             |
+| `npm run build`   | Typecheck, then build to `dist/`.                                                                                                                                                                     |
+| `npm run preview` | Serve the built `dist/` locally — the closest thing to production.                                                                                                                                    |
+| `npm run check`   | The pre-commit gate: typecheck → lint → config check → build → copy check.                                                                                                                            |
+| `npm run qa`      | Screenshots, axe accessibility scan and Lighthouse against a local preview. Writes into `docs/qa/`.                                                                                                   |
+| `npm run images`  | Re-generate `public/images/` (+ `og.jpg`, `apple-touch-icon.png`) and `src/content/images.generated.ts` from `assets-src/images/`.                                                                    |
+| `npm run qa:form` | Drive the inquiry form against the local mock backend in every mode and screenshot each state into `docs/qa/screenshots/form/`.                                                                       |
 | mock backend      | `node scripts/mock-inquiry-server.mjs --mode ok`, then `VITE_INQUIRY_ENDPOINT=http://localhost:8787 npm run dev` — the form, live, with no deployed backend ([recipe](#working-on-the-form-locally)). |
 
 Run `npm run check` before every commit and `npm run qa` before a release. Until the
@@ -60,10 +60,11 @@ reverting the commit and pushing — the same pipeline redeploys.
 
 ## Inquiry form
 
-Submissions post to a Google Apps Script web app that writes to a Google Sheet the
-business owns and emails the inquiry inbox; Web3Forms is a documented fallback and
-`mailto:` is the always-available escape hatch. No secrets live in this repository —
-see [`integrations/README.md`](integrations/README.md).
+Submissions post to a Google Apps Script web app whose only capability is appending a
+row to a Google Sheet the business owns — it holds a single OAuth scope and sends no
+email. The owner is notified by the spreadsheet's own notification rule. Web3Forms is a
+documented fallback and `mailto:` is the always-available escape hatch. No secrets live
+in this repository — see [`integrations/README.md`](integrations/README.md).
 
 ### Working on the form locally
 

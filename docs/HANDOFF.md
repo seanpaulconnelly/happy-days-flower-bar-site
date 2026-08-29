@@ -94,17 +94,17 @@ change.
 The originals live in `assets-src/images/`. That folder is not uploaded to
 GitHub — only the optimised, resized versions the website actually serves are.
 
-| Where it appears on the page                      | File name in `assets-src/images/`                    |
-| ------------------------------------------------- | ---------------------------------------------------- |
-| Hero — the big photo at the very top              | `hero-flower-bar.jpeg`                               |
-| "A Flower Bar, Brought to You" _and_ the gallery  | `flower-bar-closeup.jpeg`                            |
-| "Why Happy Days?" — first of three                | `farm-bouquet-pink-white.jpeg`                       |
-| "Why Happy Days?" — second of three               | `farm-bouquet-colorful.jpeg`                         |
-| "Why Happy Days?" — third of three                | `farm-zinnias.jpeg`                                  |
-| Gallery — second image                            | `gallery-event-detail.jpeg`                          |
-| Gallery — third image                             | `gallery-arrangement.jpeg`                           |
-| Gallery — fourth image                            | `gallery-arrangement-outdoor.jpeg`                   |
-| About — "Grown in Greensburg. Made to Be Shared." | `about-still-life.jpeg`                              |
+| Where it appears on the page                      | File name in `assets-src/images/`  |
+| ------------------------------------------------- | ---------------------------------- |
+| Hero — the big photo at the very top              | `hero-flower-bar.jpeg`             |
+| "A Flower Bar, Brought to You" _and_ the gallery  | `flower-bar-closeup.jpeg`          |
+| "Why Happy Days?" — first of three                | `farm-bouquet-pink-white.jpeg`     |
+| "Why Happy Days?" — second of three               | `farm-bouquet-colorful.jpeg`       |
+| "Why Happy Days?" — third of three                | `farm-zinnias.jpeg`                |
+| Gallery — second image                            | `gallery-event-detail.jpeg`        |
+| Gallery — third image                             | `gallery-arrangement.jpeg`         |
+| Gallery — fourth image                            | `gallery-arrangement-outdoor.jpeg` |
+| About — "Grown in Greensburg. Made to Be Shared." | `about-still-life.jpeg`            |
 
 **About that last row.** The About section shows the photo your brief named for
 that slot — the glass vase still life with blue delphinium, yellow craspedia and
@@ -171,17 +171,25 @@ reads best.)
 When someone fills in the form at the bottom of the page:
 
 - **A row is added to the Google Sheet** (`Happy Days — Inquiries`) in the Happy
-  Days Google account, on the tab called **`Inquiries`**.
-- **An email arrives at `hello@happydaysflowers.com`** with the details, so you
-  don't have to watch the spreadsheet.
-- **The visitor gets an automatic reply** confirming you received it — the same
-  words they see on screen after submitting.
+  Days Google account, on the tab called **`Inquiries`**. The Sheet is the record
+  — everything anyone typed is in that row.
+- **Google emails you to say the sheet changed**, with a link to open it. It is a
+  short, generic "this spreadsheet was updated" message: the inquiry itself is not
+  in the email, so click through and read the row.
+
+That email comes from Google Sheets, not from the website. If it ever stops
+arriving, or you want it to go somewhere else, open the Sheet and set it up
+again: **Tools → Notification settings → Edit notifications** → _Any changes are
+made_ → _Email - right away_ (or _Email - daily digest_ if one message per
+submission is too much) → **Save**. The rule belongs to whoever sets it, so if a
+second person should be emailed too, share the Sheet with them and have them do
+the same from their own account.
 
 Some submissions look automated (a bot filling in forms all over the internet).
-Those are **not thrown away** — they go to a second tab called **`Quarantine`**,
-and they do not email you immediately. Instead, **once a day at about 8 am** you
-get a short digest listing anything that was held overnight. On days when nothing
-was held, no digest is sent.
+Those are **not thrown away** — they go to a second tab called **`Quarantine`**.
+You are notified about those the same way and at the same time, so a held row is
+worth a glance whenever you are in the Sheet. Nothing is saved up for later;
+there is no daily summary to wait for.
 
 **If a real person's inquiry ends up in `Quarantine`** — it happens occasionally,
 usually when someone fills the form in very fast — just reply to them normally
@@ -189,9 +197,17 @@ from the address in that row, and move the row over to the `Inquiries` tab so
 your records stay in one place. If it keeps happening to genuine inquiries, that
 is worth flagging; the sensitivity can be adjusted.
 
+**What the person who wrote to you sees.** As soon as they submit, the page
+replaces the form with your approved confirmation wording — that is on screen,
+and it is part of the site. If they should also get that same message by email,
+that is set up as an automatic reply on the inquiry inbox, not by the website.
+It is changed in the inbox's own settings by whoever looks after that mailbox;
+nothing in this repo sends it.
+
 **A habit worth keeping: once a month, send yourself a test inquiry** from the
 live site. It takes thirty seconds and confirms three things at once — the form
-still submits, the Sheet still receives it, and the emails still arrive. Silent
+still submits, the Sheet still receives it, and Google's notification email still
+arrives. Silent
 failure is the only real risk with a form like this, and a monthly test is how
 you catch it in days rather than months. Delete the test row afterwards.
 

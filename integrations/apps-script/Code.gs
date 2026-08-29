@@ -7,14 +7,14 @@
  *    form submits without it — a missing nonce is only a hint, never a rejection.
  * 2. POST /exec (Content-Type text/plain, so the browser skips the CORS preflight that
  *    Apps Script cannot answer) is parsed from e.postData.contents.
- * 3. Every submission is SAVED FIRST. Spam signals (honeypot, too-fast, no interaction,
- *    bad nonce, link spam, duplicate) only choose which tab it lands in — "Inquiries" or
- *    "Quarantine" — and whether an email fires now. Missing required fields / a malformed
- *    email address are the ONLY hard rejects, and the client prevents those.
- * 4. Only after the row is written do we email NOTIFY_TO and send the visitor the
- *    auto-reply. A mail failure is logged and swallowed: a saved lead never becomes an
- *    error response. Quarantined rows are surfaced by sendQuarantineDigest() every
- *    morning, so a mis-flagged real lead is seen within a day.
+ * 3. Every submission is SAVED. Spam signals (honeypot, too-fast, no interaction, bad
+ *    nonce, link spam, duplicate) only choose which tab it lands in — "Inquiries" or
+ *    "Quarantine". Missing required fields / a malformed email address are the ONLY hard
+ *    rejects, and the client prevents those.
+ * 4. This script sends NO email and asks for NO mail permission (decision D19). Its only
+ *    capability is appending rows to the spreadsheet it is bound to. Notifications come
+ *    from the sheet's own Tools → Notification settings rule, set by the account owner;
+ *    the inquirer's auto-reply is an inbox rule, not part of this script.
  *
  * Governing rule (build plan §3.2): a real lead can never be lost.
  *
@@ -22,20 +22,14 @@
  * Copy the /exec URL into src/config/site.ts (inquiry.endpoint). Re-deploy (Manage
  * deployments → pencil → Version: New version) after any edit; the URL stays the same.
  * Script Properties (Project Settings → Script properties): SECRET (random 32+ chars).
- * Time-driven trigger: sendQuarantineDigest, daily, ~8am. Full walkthrough in SETUP.md.
- * This script must be container-bound to the inquiries spreadsheet (created via that
- * sheet's Extensions → Apps Script) — SpreadsheetApp.getActiveSpreadsheet() depends on it.
+ * Manifest (appsscript.json): the single scope spreadsheets.currentonly. Full walkthrough
+ * in SETUP.md. This script must be container-bound to the inquiries spreadsheet (created
+ * via that sheet's Extensions → Apps Script) — SpreadsheetApp.getActiveSpreadsheet()
+ * depends on it.
  */
 
 const SHEET_OK = 'Inquiries';
 const SHEET_Q = 'Quarantine';
-const NOTIFY_TO = 'hello@happydaysflowers.com'; // inbox that receives inquiries (decided)
-const AUTO_REPLY = true; // decided (owner, 2026-08-29)
-const AUTO_REPLY_TEXT = // owner's wording, verbatim; {name} is replaced
-  'Thanks, {name}! We received your inquiry and can’t wait to hear more about what you’re planning. ' +
-  'We’ll be in touch within 2 business days to talk through your event and help you choose the right flower bar.\n\n' +
-  'Happy Days Flower Farm';
-const MAX_EMAILS_PER_DAY = 30; // beyond this, rows still save; one "high volume" notice is sent
 const NONCE_MAX_AGE_MS = 30 * 60 * 1000;
 const REQUIRED = ['name', 'email', 'eventDate', 'eventLocation', 'eventType', 'guestCount'];
 const LIMITS = {
@@ -117,7 +111,7 @@ function doPost(e) {
     const score = flags.length;
     const quarantine = flags.indexOf('honeypot') !== -1 || score >= 2;
 
-    // 1) Save first. This is the step that must never be skipped.
+    // Save. This is the only thing the script does, and it must never be skipped.
     const row = [
       new Date(),
       quarantine ? 'review' : 'new',
@@ -136,38 +130,6 @@ function doPost(e) {
     ].map(clean);
     getSheet(quarantine ? SHEET_Q : SHEET_OK).appendRow(row);
 
-    // 2) Notify. Quarantined rows go out in the daily digest instead. A failure here cannot lose the
-    //    row and must not turn a saved lead into an error the visitor sees — so it is caught here,
-    //    not by the outer catch (which exists for sheet-write failures).
-    if (!quarantine) {
-      try {
-        if (underDailyEmailCap()) {
-          MailApp.sendEmail({
-            to: NOTIFY_TO,
-            replyTo: p.email,
-            name: 'Happy Days website',
-            subject:
-              'New flower bar inquiry — ' + oneLine(p.name) + ' (' + oneLine(p.eventDate) + ')',
-            body: COLUMNS.map(function (c, i) {
-              return c + ': ' + row[i];
-            }).join('\n'),
-          });
-          if (AUTO_REPLY)
-            MailApp.sendEmail({
-              to: p.email,
-              replyTo: NOTIFY_TO,
-              name: 'Happy Days Flower Farm',
-              subject: 'We received your inquiry — Happy Days Flower Farm',
-              // function form: a name containing $& or $1 must not be treated as a replacement pattern
-              body: AUTO_REPLY_TEXT.replace('{name}', function () {
-                return oneLine(p.name);
-              }),
-            });
-        }
-      } catch (mailErr) {
-        console.error('Notification failed (row already saved): ' + mailErr);
-      }
-    }
     return json({ ok: true }); // quarantined submissions also get ok — the lead is saved; the visitor is not told they look like a bot
   } catch (err) {
     // Last resort: keep the raw payload so nothing is lost, then let the client offer the mailto fallback.
@@ -197,50 +159,6 @@ function doPost(e) {
   }
 }
 
-// Daily: list quarantined/unsent items from the last 24h so a mis-flagged real lead is seen within a day.
-// 'error' rows (the exception path above) are included — those are leads too.
-function sendQuarantineDigest() {
-  const since = Date.now() - 24 * 60 * 60 * 1000;
-  const sheet = getSheet(SHEET_Q);
-  const rows = sheet
-    .getDataRange()
-    .getValues()
-    .slice(1)
-    .filter(function (r) {
-      return (
-        r[0] instanceof Date && r[0].getTime() >= since && (r[1] === 'review' || r[1] === 'error')
-      );
-    });
-  if (!rows.length) return;
-  const lines = rows.map(function (r) {
-    if (r[1] === 'error')
-      return '• (saved after a script error — open the sheet for the raw submission) — ' + r[12];
-    return (
-      '• ' +
-      r[2] +
-      ' <' +
-      r[4] +
-      '> — ' +
-      r[6] +
-      ' at ' +
-      r[7] +
-      ' — ' +
-      r[9] +
-      ' guests — flags: ' +
-      r[12]
-    );
-  });
-  MailApp.sendEmail({
-    to: NOTIFY_TO,
-    name: 'Happy Days website',
-    subject: rows.length + ' inquiry submission(s) need a quick look',
-    body:
-      'These were held for review because they looked automated. Real ones are worth a reply:\n\n' +
-      lines.join('\n') +
-      '\n\nOpen the "Quarantine" tab of the inquiries sheet to see full details.',
-  });
-}
-
 // ---- helpers ----
 function getSheet(name) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -257,11 +175,6 @@ function clean(v) {
   if (v instanceof Date || typeof v === 'number') return v;
   const s = String(v == null ? '' : v);
   return /^[=+\-@\t\r]/.test(s) ? "'" + s : s;
-}
-function oneLine(s) {
-  return String(s || '')
-    .replace(/[\r\n]+/g, ' ')
-    .trim();
 }
 function getSecret() {
   return PropertiesService.getScriptProperties().getProperty('SECRET') || '';
@@ -294,24 +207,6 @@ function isDuplicate(p) {
   if (cache.get(key)) return true;
   cache.put(key, '1', 21600); // CacheService max TTL is 6h; good enough for the duplicate signal
   return false;
-}
-function underDailyEmailCap() {
-  // when the cap trips, send ONE notice; rows keep saving regardless
-  const cache = CacheService.getScriptCache();
-  const key = 'emails:' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd');
-  const n = Number(cache.get(key) || 0) + 1;
-  cache.put(key, String(n), 21600);
-  if (n === MAX_EMAILS_PER_DAY + 1) {
-    MailApp.sendEmail({
-      to: NOTIFY_TO,
-      subject: 'Website inquiries: high volume today',
-      body:
-        'More than ' +
-        MAX_EMAILS_PER_DAY +
-        ' submissions today. Notifications are paused until tomorrow; every submission is still being saved to the "Inquiries" sheet.',
-    });
-  }
-  return n <= MAX_EMAILS_PER_DAY;
 }
 function json(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(
