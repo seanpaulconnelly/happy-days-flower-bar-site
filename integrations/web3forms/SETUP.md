@@ -83,14 +83,14 @@ the prefilled `mailto:` fallback.
 
 ## 4. Limits and behaviour differences
 
-|                           | Apps Script (primary)                                                     | Web3Forms (fallback)                                                                                        |
-| ------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Cost                      | Free                                                                      | Free tier: **250 submissions/month**, unlimited forms                                                       |
-| Record of leads           | Google Sheet (`Inquiries` + `Quarantine` tabs), owned by the business     | Email only (Sheets sync is Pro)                                                                             |
-| Auto-reply to the visitor | Not sent by the site — an inbox rule handles it (D19)                     | Not on the free tier either — the adapter does not send one                                                 |
-| Spam handling             | Honeypot + timing + nonce + content flags → quarantine, never a rejection | Web3Forms' own filtering plus the `botcheck` honeypot; a flagged submission is **dropped**, not quarantined |
-| How you hear about a lead | Google Sheets' own notification rule, on any change to either tab         | Web3Forms emails the verified inbox directly                                                                |
-| Secrets in the repo       | None                                                                      | None                                                                                                        |
+|                           | Apps Script (primary)                                                                   | Web3Forms (fallback)                                                                                        |
+| ------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Cost                      | Free                                                                                    | Free tier: **250 submissions/month**, unlimited forms                                                       |
+| Record of leads           | Google Sheet (`Inquiries` + `Quarantine` tabs), owned by the business                   | Email only (Sheets sync is Pro)                                                                             |
+| Auto-reply to the visitor | Not sent by the site — an inbox rule handles it (D19)                                   | Not on the free tier either — the adapter does not send one                                                 |
+| Spam handling             | Honeypot + timing + nonce + content flags → quarantine, never a rejection               | Web3Forms' own filtering plus the `botcheck` honeypot; a flagged submission is **dropped**, not quarantined |
+| How you hear about a lead | Out of scope for the site (D20) — the Sheet is the record; a separate workflow reads it | Web3Forms emails the verified inbox directly — that is how the provider works                               |
+| Secrets in the repo       | None                                                                                    | None                                                                                                        |
 
 The **Record of leads** and **Spam handling** rows are the reason this is a fallback: the
 "a real lead can never be lost" rule

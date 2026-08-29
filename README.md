@@ -62,9 +62,11 @@ reverting the commit and pushing — the same pipeline redeploys.
 
 Submissions post to a Google Apps Script web app whose only capability is appending a
 row to a Google Sheet the business owns — it holds a single OAuth scope and sends no
-email. The owner is notified by the spreadsheet's own notification rule. Web3Forms is a
-documented fallback and `mailto:` is the always-available escape hatch. No secrets live
-in this repository — see [`integrations/README.md`](integrations/README.md).
+email. The endpoint's contract ends there: the Sheet is the record of truth, and being
+told that a row has landed is out of scope for the site (D20), handled by a separate
+workflow outside this repo. Web3Forms is a documented fallback and `mailto:` is the
+always-available escape hatch. No secrets live in this repository — see
+[`integrations/README.md`](integrations/README.md).
 
 ### Working on the form locally
 

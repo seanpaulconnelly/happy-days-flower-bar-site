@@ -1,15 +1,17 @@
 # Deploying the inquiry endpoint (Google Apps Script)
 
-**Time: ~12 minutes**, start to finish, including the two test submissions.
+**Time: ~11 minutes**, start to finish, including the two test submissions.
 **Do this while signed in to the Happy Days Google account** — the script runs as the account
 that deploys it, and it writes into that account's spreadsheet.
 
 You need: a browser signed in to the Happy Days Google account, a terminal (for `openssl` and
 `curl`), and this repo checked out.
 
-The script **sends no email**. Its only capability is appending a row to the spreadsheet it is
-attached to; notifications come from the spreadsheet's own notification rule (§6). That is
-deliberate — a publicly callable endpoint should not hold a permission to send mail.
+The script **sends no email** — not to the business, not to the person who submitted. Its only
+capability is appending a row to the spreadsheet it is attached to, and that saved row is the
+whole contract (§6). That is deliberate: a publicly callable endpoint should not hold a
+permission to send mail. How the business learns that a new row has landed is a separate
+workflow, handled outside this repo.
 
 Nothing here is secret to the repo. The finished `/exec` URL is a public endpoint by design; the
 only real secret, `SECRET`, lives in Apps Script's own Script properties and is never committed.
@@ -50,8 +52,8 @@ tabs (with headers and a frozen header row) the first time each is needed.
       authorisation; to drop the old grant, visit <https://myaccount.google.com/permissions>,
       remove _Happy Days inquiry endpoint_, and run **`doGet`** once more.
 
-There is no inbox address to configure. Where the notification email goes is decided in §6, by
-the spreadsheet, not by the script.
+There is no inbox address to configure anywhere in this setup. The script has no way to send
+mail at all — see §6 for what does happen when a submission arrives.
 
 ## 3. Add the `SECRET` script property (2 min)
 
@@ -116,30 +118,29 @@ Running one function authorises the whole project — the scopes come from `apps
 > are what the editor shows today; if the wording has changed, pick the option that maps to
 > _the script owner_ and _anyone, including anonymous users_.
 
-## 6. Turn on sheet notifications (1 min)
+## 6. What happens after a submission
 
-The script never emails anyone. Google Sheets does it instead: a notification rule on the
-spreadsheet emails the account that set it whenever a row is added — to **either** tab, so a
-quarantined submission is visible straight away rather than waiting for a summary.
+The endpoint's job ends the moment the row is saved:
 
-Back in the spreadsheet (not the script editor), signed in as the Happy Days account:
+- a submission that looks human becomes a row on the **`Inquiries`** tab;
+- a submission carrying two or more spam flags becomes a row on the **`Quarantine`** tab.
 
-1. **Tools → Notification settings → Edit notifications**.
-   (Older Sheets UI: **Tools → Notification rules**.)
-2. Under _Notify you when…_ choose **Any changes are made**.
-3. Under _Notify you with…_ choose **Email - right away** (or **Email - daily digest** if a
-   message per submission would be too much).
-4. **Save**.
-   ([docs: Set notifications in a spreadsheet](https://support.google.com/docs/answer/91588))
+Nothing is emailed to anyone at either step. **The spreadsheet is the record of truth** — every
+detail anyone typed is in the row.
 
-Two things to know:
+How the business is told that a new row has landed is deliberately **not** part of the site or
+the script (decision D20 in `docs/qa/decisions.md`). It is a separate workflow — for example a
+scheduled agent that reads the sheet — owned outside this repo, and it can change without
+touching anything here.
 
-- **Notification rules are per user, not per spreadsheet.** The rule belongs to whoever sets it.
-  If a second person should be emailed too, share the sheet with them and have them set their
-  own rule from their own account.
-- **The email is Google's generic "changes were made" message with a link to the sheet** — it
-  does not contain the inquiry itself. Open the sheet to read the details. The sheet, not the
-  email, is the record.
+Two things worth knowing:
+
+- **Look at the `Quarantine` tab whenever the sheet is checked.** A mis-flagged real inquiry
+  sits there until someone opens it; nothing moves it for you.
+- **If Sheets change-emails are still switched on for the account that deployed the script, they
+  are inert.** Sheets does not email an account about edits that same account made, and the
+  script writes to the sheet as the deploying account. Switching them off avoids the false
+  impression that something is watching the sheet for you.
 
 ## 7. Smoke test — a good submission (1 min)
 
@@ -164,16 +165,11 @@ Two details that matter:
 - **`-L`** — a POST to `/exec` answers with a redirect to `script.googleusercontent.com`, where
   the actual response body is served. Without `-L`, curl prints nothing and it looks broken.
 
-Then check, in order:
+Then open the spreadsheet: it now has an **`Inquiries`** tab with a header row and one new row
+(Status `new`, Score `0`, Flags empty). That row is the entire expected result.
 
-1. The spreadsheet has an **`Inquiries`** tab with a header row and one new row
-   (Status `new`, Score `0`, Flags empty).
-2. The Happy Days account has **Google's notification email** — subject along the lines of
-   _"Happy Days — Inquiries was updated"_, with a link back to the sheet. On _right away_ it
-   arrives within a few minutes; on _daily digest_, the next day.
-
-There is no email from the script itself, and the person who submitted gets no reply from it —
-that is by design (see §6 and `docs/HANDOFF.md`).
+No email arrives — not to the Happy Days account, and not to the person who submitted. That is
+by design (see §6 and `docs/HANDOFF.md`).
 
 Delete the test row from the sheet when you are done.
 
@@ -189,13 +185,11 @@ curl -L '<EXEC_URL>' \
 ```
 
 Expected: **`{"ok":true}` as well** — a suspected bot is never told it was caught, and a
-mis-flagged human is never shown a failure. Then check:
+mis-flagged human is never shown a failure. Then check that a **`Quarantine`** tab now exists
+with this row, Status `review`, Flags something like `fast,no-interaction,nonce`.
 
-1. A **`Quarantine`** tab now exists with this row, Status `review`, Flags something like
-   `fast,no-interaction,nonce`.
-2. **A notification email arrives for this one too.** The rule watches the whole spreadsheet, so
-   held rows are seen the same day rather than waiting for a summary. Quarantine is a sorting
-   decision, not a delay.
+No email arrives for this one either. Quarantine is a sorting decision, not a delay: the row is
+written immediately, which is why the tab is worth a glance whenever the sheet is checked.
 
 Delete the test row when you are done.
 
@@ -234,15 +228,13 @@ scope is the security property that makes a public endpoint safe to leave runnin
 
 ## Quotas and caps
 
-| Limit                             | Value                                      | What happens at the limit                                                                       |
-| --------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| Notification emails               | Rate-limited by Google, not by this script | Google may batch or delay its own change notifications; every row is still written to the sheet |
-| Nonce lifetime                    | 30 minutes                                 | An older nonce is one spam flag, nothing more                                                   |
-| `CacheService` (duplicate signal) | 6-hour TTL, not durable storage            | Best-effort by design; the sheet write never depends on it                                      |
+| Limit                             | Value                           | What happens at the limit                                  |
+| --------------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| Nonce lifetime                    | 30 minutes                      | An older nonce is one spam flag, nothing more              |
+| `CacheService` (duplicate signal) | 6-hour TTL, not durable storage | Best-effort by design; the sheet write never depends on it |
 
 The script has no mail quota to exhaust, so a flood of bot submissions cannot cost you a lost
-lead — it can only add rows. **The sheet is the record of truth**; the notification email is a
-convenience that tells you to go and look at it.
+lead — it can only add rows. **The sheet is the record of truth.**
 
 ## If a Workspace admin policy blocks "Anyone" access
 
@@ -264,17 +256,16 @@ No Google Sheet in that mode — inquiries arrive by email only.
 
 ## Troubleshooting
 
-| Symptom                                                        | Cause                                                                                                                   | Fix                                                                                                                                                             |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `curl` prints nothing, or exit code 0 with empty body          | Missing `-L`; POST to `/exec` answers with a 302 to `script.googleusercontent.com`                                      | Add `-L`                                                                                                                                                        |
-| Browser console: _"blocked by CORS policy … preflight"_        | The request was sent as `application/json`, so the browser sent an `OPTIONS` preflight that Apps Script does not answer | Post the JSON string with `Content-Type: text/plain;charset=utf-8` (the site's adapter already does)                                                            |
-| HTML sign-in page instead of JSON; 401/403                     | _Who has access_ is not **Anyone**, or a Workspace policy blocks it                                                     | Re-deploy with **Anyone**; if that option is unavailable, see the section above                                                                                 |
-| Redirect loop, or `{"ok":…}` never arrives                     | Deployment was made from a different Google account than the sheet's owner                                              | Redeploy from the Happy Days account (the sheet's owner)                                                                                                        |
-| _"Script function not found: doPost"_                          | Pasted an incomplete file, or the deployment predates the paste                                                         | Confirm `doPost` exists in the editor, save, then **Manage deployments → Edit → New version → Deploy**                                                          |
-| `{"ok":false,"reason":"rejected"}`                             | A required field is empty or the email is malformed — the only hard rejects                                             | Check `name`, `email`, `eventDate`, `eventLocation`, `eventType`, `guestCount` in the payload                                                                   |
-| `{"ok":false,"reason":"error"}`                                | The sheet write itself failed                                                                                           | Look in the `Quarantine` tab — the raw payload was saved with Status `error`; open **Executions** in the editor for the stack trace                             |
-| Row appears, but no notification email                         | The notification rule is missing, or was set by a different account — rules are **per user**                            | In the sheet, as the Happy Days account: **Tools → Notification settings → Edit notifications** → _Any changes are made_ → _Email - right away_ → **Save** (§6) |
-| Notification email says the sheet changed but shows no details | Google's change notification never includes cell contents                                                               | Expected — follow the link and read the row in the sheet                                                                                                        |
-| Consent screen asks to send email as you                       | An old broad authorisation, or `appsscript.json` was not saved                                                          | Re-paste `appsscript.json` (§2 step 6), remove the grant at <https://myaccount.google.com/permissions>, run `doGet` again                                       |
-| Submission landed in `Quarantine` unexpectedly                 | 2+ spam flags — check the **Flags** column                                                                              | Reply to it normally; if a pattern shows up, adjust the flag thresholds in `Code.gs` and re-deploy                                                              |
-| Nothing writes to the sheet at all                             | The script is standalone, not bound to the spreadsheet                                                                  | It must be created from the sheet's own **Extensions → Apps Script**                                                                                            |
+| Symptom                                                 | Cause                                                                                                                   | Fix                                                                                                                                 |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `curl` prints nothing, or exit code 0 with empty body   | Missing `-L`; POST to `/exec` answers with a 302 to `script.googleusercontent.com`                                      | Add `-L`                                                                                                                            |
+| Browser console: _"blocked by CORS policy … preflight"_ | The request was sent as `application/json`, so the browser sent an `OPTIONS` preflight that Apps Script does not answer | Post the JSON string with `Content-Type: text/plain;charset=utf-8` (the site's adapter already does)                                |
+| HTML sign-in page instead of JSON; 401/403              | _Who has access_ is not **Anyone**, or a Workspace policy blocks it                                                     | Re-deploy with **Anyone**; if that option is unavailable, see the section above                                                     |
+| Redirect loop, or `{"ok":…}` never arrives              | Deployment was made from a different Google account than the sheet's owner                                              | Redeploy from the Happy Days account (the sheet's owner)                                                                            |
+| _"Script function not found: doPost"_                   | Pasted an incomplete file, or the deployment predates the paste                                                         | Confirm `doPost` exists in the editor, save, then **Manage deployments → Edit → New version → Deploy**                              |
+| `{"ok":false,"reason":"rejected"}`                      | A required field is empty or the email is malformed — the only hard rejects                                             | Check `name`, `email`, `eventDate`, `eventLocation`, `eventType`, `guestCount` in the payload                                       |
+| `{"ok":false,"reason":"error"}`                         | The sheet write itself failed                                                                                           | Look in the `Quarantine` tab — the raw payload was saved with Status `error`; open **Executions** in the editor for the stack trace |
+| No email arrives after a submission                     | Expected — nothing in this setup sends mail                                                                             | Open the sheet; the row is the result (§6). Being told about new rows is a separate workflow outside this repo                      |
+| Consent screen asks to send email as you                | An old broad authorisation, or `appsscript.json` was not saved                                                          | Re-paste `appsscript.json` (§2 step 6), remove the grant at <https://myaccount.google.com/permissions>, run `doGet` again           |
+| Submission landed in `Quarantine` unexpectedly          | 2+ spam flags — check the **Flags** column                                                                              | Reply to it normally; if a pattern shows up, adjust the flag thresholds in `Code.gs` and re-deploy                                  |
+| Nothing writes to the sheet at all                      | The script is standalone, not bound to the spreadsheet                                                                  | It must be created from the sheet's own **Extensions → Apps Script**                                                                |

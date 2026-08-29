@@ -4,11 +4,12 @@
   Sheet the business owns, and does nothing else. It **sends no email**: the manifest declares
   one scope (`spreadsheets.currentonly`, "only the specific Google Sheets files this script is
   attached to"), so a publicly callable endpoint holds no permission to send mail. Deploy it
-  with `apps-script/SETUP.md` (~12 min, one-time).
-- **Notifications come from Google Sheets, not from the script** — the owner sets the
-  spreadsheet's own rule (_Tools → Notification settings → Edit notifications_ → _Any changes
-  are made_ → _Email - right away_), and Google emails a link to the sheet whenever a row lands
-  in either tab. Both `Inquiries` and `Quarantine` notify, so nothing waits for a summary.
+  with `apps-script/SETUP.md` (~11 min, one-time).
+- **Being told about new inquiries is out of scope for the site** (D20). The endpoint's
+  contract ends at "the row is saved", to the `Inquiries` tab or the `Quarantine` tab; the
+  spreadsheet is the record of truth. Learning that a row has landed — and triaging
+  `Quarantine` — is a separate workflow owned outside this repo, and it can change without any
+  change here.
 - **The auto-reply to the visitor is not a website deliverable.** It is a rule on the inquiry
   inbox, owned outside this repo. The approved wording is still shown on screen in the form's
   success panel (`src/content/formCopy.ts`).

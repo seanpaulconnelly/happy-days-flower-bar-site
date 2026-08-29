@@ -173,23 +173,21 @@ When someone fills in the form at the bottom of the page:
 - **A row is added to the Google Sheet** (`Happy Days — Inquiries`) in the Happy
   Days Google account, on the tab called **`Inquiries`**. The Sheet is the record
   — everything anyone typed is in that row.
-- **Google emails you to say the sheet changed**, with a link to open it. It is a
-  short, generic "this spreadsheet was updated" message: the inquiry itself is not
-  in the email, so click through and read the row.
+- **Nothing is emailed.** Not to you, and not to the person who wrote in. The
+  website's job finishes when the row is saved.
 
-That email comes from Google Sheets, not from the website. If it ever stops
-arriving, or you want it to go somewhere else, open the Sheet and set it up
-again: **Tools → Notification settings → Edit notifications** → _Any changes are
-made_ → _Email - right away_ (or _Email - daily digest_ if one message per
-submission is too much) → **Save**. The rule belongs to whoever sets it, so if a
-second person should be emailed too, share the Sheet with them and have them do
-the same from their own account.
+**Being told that a new inquiry has arrived is handled outside the website.** It
+is its own small workflow — for example a scheduled Claude agent that reads the
+Sheet and tells you what is new (and can sort through the held rows below). It
+can be set up, changed or replaced at any time without touching the site, and
+nothing in this repo needs to know about it. The Sheet stays the record either
+way: whatever tells you about a row, the row itself is where you read it.
 
 Some submissions look automated (a bot filling in forms all over the internet).
 Those are **not thrown away** — they go to a second tab called **`Quarantine`**.
-You are notified about those the same way and at the same time, so a held row is
-worth a glance whenever you are in the Sheet. Nothing is saved up for later;
-there is no daily summary to wait for.
+They land there at the same moment, so nothing is saved up for later and there is
+no summary to wait for — but nothing moves them for you, so **the `Quarantine`
+tab is worth a glance whenever you are in the Sheet**.
 
 **If a real person's inquiry ends up in `Quarantine`** — it happens occasionally,
 usually when someone fills the form in very fast — just reply to them normally
@@ -205,11 +203,11 @@ It is changed in the inbox's own settings by whoever looks after that mailbox;
 nothing in this repo sends it.
 
 **A habit worth keeping: once a month, send yourself a test inquiry** from the
-live site. It takes thirty seconds and confirms three things at once — the form
-still submits, the Sheet still receives it, and Google's notification email still
-arrives. Silent
-failure is the only real risk with a form like this, and a monthly test is how
-you catch it in days rather than months. Delete the test row afterwards.
+live site, then open the Sheet and confirm the row is there. It takes thirty
+seconds and confirms both halves at once — the form still submits, and the Sheet
+still receives it. Silent failure is the only real risk with a form like this,
+and a monthly test is how you catch it in days rather than months. Delete the
+test row afterwards.
 
 > **Or ask Claude Code:** _"Check the inquiry form on the live site is still
 > working end to end and tell me what to look for in the Sheet."_

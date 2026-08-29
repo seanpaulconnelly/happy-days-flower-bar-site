@@ -33,8 +33,8 @@ Run every command from the repository root.
 | 8   | GitHub custom domain + Enforce HTTPS (§2.4)                  | 🧑 Sean         | **partial** — custom domain `happydaysflowers.com` saved by Sean; Enforce HTTPS pending the certificate                                                                                                                                                                                                                                                                                                                              |
 | 9   | `happydaysflowerfarm.com` URL forwarding (§2.5)              | 🧑 Sean         | pending (B4)                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 10  | Post-cutover verification (§2.6)                             | agent           | **partial** 2026-08-29 19:15 UTC — apex 200, `index,follow`, canonical `https://happydaysflowers.com/`, 1 JSON-LD, assets 200, robots/sitemap/llms 200, base-aware 404, github.io → apex 301, no overflow, axe 0; `www` and HTTPS enforcement pending row 7/8                                                                                                                                                                        |
-| 11  | Apps Script `/exec` URL into `site.ts` (§4)                  | 🧑 Sean → agent | **done** 2026-08-29 — `/exec` URL in `site.ts` (`29e4708`), `--allow-todos` removed from `deploy.yml`; preview submission → success, botty POST → `{ok:true}` |
-| 12  | GA4 Measurement ID into `site.ts` (§5)                       | 🧑 Sean → agent | **done** 2026-08-29 — `G-0Q10S0HGSZ` in `site.ts` (`c6ab221`); fires only on the canonical host |
+| 11  | Apps Script `/exec` URL into `site.ts` (§4)                  | 🧑 Sean → agent | **done** 2026-08-29 — `/exec` URL in `site.ts` (`29e4708`), `--allow-todos` removed from `deploy.yml`; preview submission → success, botty POST → `{ok:true}`; notifications out of scope (D20)                                                                                                                                                                                                                                      |
+| 12  | GA4 Measurement ID into `site.ts` (§5)                       | 🧑 Sean → agent | **done** 2026-08-29 — `G-0Q10S0HGSZ` in `site.ts` (`c6ab221`); fires only on the canonical host                                                                                                                                                                                                                                                                                                                                      |
 
 Blocker IDs (B1–B4) are the rows in
 `3-plans/happy-days-flower-bar-site/BLOCKERS.md` in the wrapper project.
@@ -414,17 +414,19 @@ Accessibility 100, Best Practices ≥ 95, SEO 100.
 
 ## 4. Apps Script endpoint (blocker B1)
 
-`src/config/site.ts` → `inquiry.endpoint` currently holds
-`'TODO_APPS_SCRIPT_EXEC_URL'`, which is why every build so far passes
-`--allow-todos`.
+**Done** (row 11) — `src/config/site.ts` → `inquiry.endpoint` holds the live
+`/exec` URL and `--allow-todos` is gone from `npm run check` and from
+`deploy.yml`. The steps below are the record of how it was done, and what to
+repeat if the endpoint is ever redeployed.
 
 1. 🧑 Deploy the script by following
    [`integrations/apps-script/SETUP.md`](../integrations/apps-script/SETUP.md)
    (~12 min, signed in to the Happy Days Google account). That document is the
    click-by-click source — it is not duplicated here. Note that the script sends
-   no email (one OAuth scope, `spreadsheets.currentonly`); §6 of that document
-   turns on the spreadsheet's own notification rule instead, and it must be set
-   from the Happy Days account because Sheets notification rules are per user.
+   no email at all (one OAuth scope, `spreadsheets.currentonly`): its contract
+   ends when the row is saved to the sheet (§6 of that document, decision D20).
+   Being told that a row has landed is out of scope for the site and is handled
+   by a separate workflow outside this repo.
 2. Paste the resulting `/exec` URL into `src/config/site.ts`:
 
    ```ts
@@ -448,10 +450,11 @@ check` is the gate. Also remove the flag from the `npm run check` step in
 
 4. Commit and push. Then run a real submission from `npm run preview` and a
    deliberately "botty" one, and confirm the `Inquiries` and `Quarantine` rows
-   plus Google's "spreadsheet was updated" email for each — the verification
-   steps are in §7 and §8 of `SETUP.md`. No email comes from the script itself,
-   and the visitor gets no reply from it; the auto-reply is an inbox rule handled
-   outside this repo (decision D19).
+   appear in the sheet — the verification steps are in §7 and §8 of `SETUP.md`.
+   **No email is expected for either**: nothing in this setup sends mail, the
+   sheet is the record of truth, and being told about new rows is a separate
+   workflow outside this repo (decisions D19, D20). The visitor's auto-reply is
+   likewise an inbox rule, not a site feature.
 
 If a Workspace policy blocks "Anyone" access to the web app, switch
 `inquiry.provider` to `'web3forms'` and put the access key in `endpoint`
