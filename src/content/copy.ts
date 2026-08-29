@@ -14,7 +14,7 @@
  */
 
 export const header = {
-  wordmark: 'Happy Days Flower Farm',
+  wordmark: 'Happy Days Flowers',
   nav: [
     { label: 'Flower Bar', href: '#flower-bar' },
     { label: 'About', href: '#about' },
@@ -23,9 +23,9 @@ export const header = {
 } as const;
 
 export const hero = {
-  // R2: the spec header line reads "Happy Days Flower Farm | Unique Floral
+  // R2: the spec header line reads "Happy Days Flowers | Unique Floral
   // Experiences"; the SEO starter pins the H1 to "Unique Floral Experiences".
-  eyebrow: 'Happy Days Flower Farm',
+  eyebrow: 'Happy Days Flowers',
   heading: 'Unique Floral Experiences',
   body: 'Locally grown and sourced floral experiences for businesses, events and gatherings across Western Pennsylvania.',
   cta: 'Inquire About Your Date',
@@ -131,7 +131,7 @@ export const whyHappyDays = {
   reasons: [
     {
       title: 'Locally Grown + Thoughtfully Sourced',
-      body: 'Whenever the season allows, our flower bars feature blooms grown right here at Happy Days Flower Farm in Greensburg, Pennsylvania. We thoughtfully source additional flowers and greenery to create a full, beautiful selection year-round.',
+      body: 'Whenever the season allows, our flower bars feature blooms grown right here at Happy Days Flowers in Greensburg, Pennsylvania. We thoughtfully source additional flowers and greenery to create a full, beautiful selection year-round.',
     },
     {
       title: 'Designed Around the Season',
@@ -157,7 +157,7 @@ export const gallery = {
 export const about = {
   heading: 'Grown in Greensburg. Made to Be Shared.',
   body: [
-    'Happy Days Flower Farm is a specialty cut flower farm in Greensburg, Pennsylvania creating unique floral experiences throughout Western PA.',
+    'Happy Days Flowers is a specialty cut flower farm in Greensburg, Pennsylvania creating unique floral experiences throughout Western PA.',
     'We grow seasonal flowers with a garden-inspired style and thoughtfully gather additional blooms locally when needed. What began with a single flower planted by our then 4-year-old son for Mother’s Day has grown into something much bigger — a family-inspired journey dedicated to helping others experience, enjoy, and share the simple joy of flowers.',
   ],
 } as const;
@@ -182,7 +182,7 @@ export const faq = {
     {
       question: 'How far do you travel? Is there a travel fee?',
       answer:
-        'Happy Days Flower Farm is based in Greensburg and serves Pittsburgh and surrounding communities throughout Western Pennsylvania. Standard delivery, setup and pickup are included within our primary service area, approximately one hour or 50 miles from Greensburg. Events requiring extended travel may receive a custom travel quote.',
+        'Happy Days Flowers is based in Greensburg and serves Pittsburgh and surrounding communities throughout Western Pennsylvania. Standard delivery, setup and pickup are included within our primary service area, approximately one hour or 50 miles from Greensburg. Events requiring extended travel may receive a custom travel quote.',
     },
     {
       question: 'How far in advance should we book?',
@@ -262,7 +262,7 @@ export const inquiry = {
 
 export const footer = {
   lines: [
-    'Happy Days Flower Farm',
+    'Happy Days Flowers',
     'Greensburg, Pennsylvania',
     'Serving Pittsburgh + Western Pennsylvania',
   ],
@@ -282,7 +282,7 @@ export const footer = {
  */
 export const autoReply = {
   body: 'Thanks, {name}! We received your inquiry and can’t wait to hear more about what you’re planning. We’ll be in touch within 2 business days to talk through your event and help you choose the right flower bar.',
-  signature: 'Happy Days Flower Farm',
+  signature: 'Happy Days Flowers',
 } as const;
 
 export const copy = {

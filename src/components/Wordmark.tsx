@@ -10,12 +10,12 @@ import { cn } from '../lib/cn';
  * lockup at 15 px so all three nav items still fit on one row at 320 px. The
  * break is a line break, not new copy: both halves are sliced out of
  * `copy.header.wordmark` and rejoined by a real space text node, so the
- * accessible name and `check-copy` both read "Happy Days Flower Farm".
+ * accessible name and `check-copy` both read "Happy Days Flowers".
  *
  * `variant="footer"` is the 24 px single line.
  */
 const WORDS = headerCopy.wordmark.split(' ');
-/** "Happy Days" / "Flower Farm" — the lockup breaks after the second word. */
+/** "Happy Days" / "Flowers" — the lockup breaks after the second word. */
 const LOCKUP_BREAK_AFTER = 2;
 
 export default function Wordmark({

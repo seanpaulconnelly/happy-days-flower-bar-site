@@ -258,6 +258,8 @@ export function buildJsonLd(input: BuildJsonLdInput): JsonLdGraph {
     '@type': 'Florist',
     '@id': businessId,
     name: site.name,
+    legalName: site.legalName,
+    alternateName: site.formerName,
     slogan: site.tagline,
     description: site.seo.description,
     url: base,

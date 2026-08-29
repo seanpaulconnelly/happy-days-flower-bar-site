@@ -1,4 +1,4 @@
-# Happy Days Flower Farm — site
+# Happy Days Flowers — site
 
 Single-page marketing site. Vite 8 · React 19 · Tailwind 4 · TypeScript. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to `main`.
 

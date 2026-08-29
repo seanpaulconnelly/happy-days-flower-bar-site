@@ -5,7 +5,9 @@
  * the build on any remaining `TODO_` placeholder unless `--allow-todos`.
  */
 export const site = {
-  name: 'Happy Days Flower Farm',
+  name: 'Happy Days Flowers', // brand name on the site (Sean, 2026-08-29, D22)
+  legalName: 'Happy Days Flower Farm, LLC', // footer copyright + JSON-LD legalName only
+  formerName: 'Happy Days Flower Farm', // JSON-LD alternateName so existing brand searches still match
   tagline: 'Unique Floral Experiences',
   location: {
     city: 'Greensburg',
@@ -32,7 +34,7 @@ export const site = {
   },
   contact: { phone: '', streetAddress: '' }, // service-area business: none published in V1
   seo: {
-    title: 'Pop-Up Flower Bars in Pittsburgh, PA | Happy Days Flower Farm', // Sean, 2026-08-29 (D21): city-first for local search
+    title: 'Pop-Up Flower Bars in Pittsburgh, PA | Happy Days Flowers', // Sean, 2026-08-29 (D21): city-first for local search
     description:
       'Unique floral experiences and turnkey pop-up flower bars for businesses, events and gatherings in Greensburg, Pittsburgh and throughout Western Pennsylvania.',
     exposePricesInStructuredData: true,

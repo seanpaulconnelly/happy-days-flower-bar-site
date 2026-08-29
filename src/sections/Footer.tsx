@@ -11,7 +11,8 @@ import { footer } from '../content/copy';
  * heading elements (ux-spec §9). Every line is verbatim from `copy.footer`; the
  * URLs and the address come from `src/config/site.ts`.
  */
-const COPYRIGHT = `© ${footer.lines[0]}`;
+// The copyright line is the only place the legal entity name appears (D22).
+const COPYRIGHT = `© ${site.legalName}`;
 
 export default function Footer() {
   const [, place, serviceArea] = footer.lines;

@@ -1,5 +1,5 @@
 # https://happydaysflowers.com/robots.txt
-# Happy Days Flower Farm — Greensburg, Pennsylvania
+# Happy Days Flowers — Greensburg, Pennsylvania
 #
 # Policy: OPEN. Search crawlers and AI / answer-engine crawlers are all allowed.
 # Decided 2026-08-29 (build plan §8, Q19): the goal is to be found and cited when

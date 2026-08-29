@@ -31,6 +31,10 @@ export const PREVIEW_URL = 'https://seanpaulconnelly.github.io/happy-days-flower
  */
 export interface SeoSite {
   readonly name: string;
+  /** Registered entity name, emitted as `legalName` when present. */
+  readonly legalName?: string;
+  /** A previous brand name, emitted as `alternateName` when present. */
+  readonly formerName?: string;
   readonly tagline: string;
   /** Canonical origin, e.g. `https://happydaysflowers.com` (with or without a trailing slash). */
   readonly url: string;

@@ -100,4 +100,4 @@ configuration. Screenshots land in `docs/qa/screenshots/form/` (gitignored).
 
 ---
 
-© Happy Days Flower Farm. All rights reserved.
+© Happy Days Flower Farm, LLC. All rights reserved.
