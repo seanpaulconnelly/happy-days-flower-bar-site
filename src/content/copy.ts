@@ -79,6 +79,7 @@ export const packages = {
     {
       name: 'The Classic Flower Bar',
       guests: 'Up to 25 guests',
+      maxGuests: 25,
       price: '$895',
       description:
         'A complete flower bar experience for smaller gatherings, client events and celebrations.',
@@ -87,6 +88,8 @@ export const packages = {
     {
       name: 'The Social Flower Bar',
       guests: '26–50 guests',
+      minGuests: 26,
+      maxGuests: 50,
       price: '$1,495',
       description:
         'Perfect for corporate events, client appreciation, open houses and larger gatherings.',
@@ -98,6 +101,8 @@ export const packages = {
     {
       name: 'The Full Flower Bar',
       guests: '51–75 guests',
+      minGuests: 51,
+      maxGuests: 75,
       price: '$1,995',
       description:
         'A fully stocked flower bar designed for larger events and high-traffic guest experiences.',
@@ -110,6 +115,7 @@ export const packages = {
   custom: {
     name: 'Custom Floral Experience',
     guests: '75+ guests',
+    minGuests: 75,
     price: 'Custom quote',
     description:
       'Planning something bigger? We’ll create a custom flower bar experience based on your event, guest count and floral needs.',
@@ -161,8 +167,12 @@ export const faq = {
   // (the section itself was approved in answers-from-bethany.md §3a). This is a
   // placeholder for the owner to confirm — flagged in the Phase 3 handoff.
   heading: 'Frequently Asked Questions',
-  // Verbatim from answers-from-bethany.md §3a, in source order. The SEO
-  // specialist may later specify a display order; do not reorder this array.
+  // Verbatim from answers-from-bethany.md §3a, in SEO display order — see
+  // docs/seo-aeo-spec.md §11.1 (source indices 1, 4, 3, 2, 5, 7, 8, 6; request
+  // SEO-3). Not one word changed: display order only. This array IS the order
+  // of the <details> rows AND of FAQPage.mainEntity, which is what makes a
+  // DOM/JSON-LD divergence structurally impossible — do not reorder it and do
+  // not introduce an index map.
   items: [
     {
       question: 'What’s included with a Happy Days Flower Bar?',
@@ -170,9 +180,9 @@ export const faq = {
         'Every flower bar includes a curated selection of seasonal flowers and greenery, our 12-bucket flower bar display, bouquet sleeves, signage, preparation, delivery, setup and pickup.',
     },
     {
-      question: 'How many flowers does each guest get?',
+      question: 'How far do you travel? Is there a travel fee?',
       answer:
-        'Packages include approximately 10 stems per participating guest. Guests choose their own combination of flowers, greenery and seasonal accents.',
+        'Happy Days Flower Farm is based in Greensburg and serves Pittsburgh and surrounding communities throughout Western Pennsylvania. Standard delivery, setup and pickup are included within our primary service area, approximately one hour or 50 miles from Greensburg. Events requiring extended travel may receive a custom travel quote.',
     },
     {
       question: 'How far in advance should we book?',
@@ -180,19 +190,14 @@ export const faq = {
         'As early as possible is always best, particularly for popular spring, summer and fall dates. We recommend booking at least 3–4 weeks in advance, but shorter-notice events may be possible depending on availability.',
     },
     {
-      question: 'How far do you travel? Is there a travel fee?',
+      question: 'How many flowers does each guest get?',
       answer:
-        'Happy Days Flower Farm is based in Greensburg and serves Pittsburgh and surrounding communities throughout Western Pennsylvania. Standard delivery, setup and pickup are included within our primary service area, approximately one hour or 50 miles from Greensburg. Events requiring extended travel may receive a custom travel quote.',
+        'Packages include approximately 10 stems per participating guest. Guests choose their own combination of flowers, greenery and seasonal accents.',
     },
     {
       question: 'Can the flowers match our event or brand colors?',
       answer:
         'Yes. We can design the flower selection around a preferred color palette while working with the best seasonal blooms available. Because we work with locally grown and seasonal flowers, exact varieties cannot always be guaranteed.',
-    },
-    {
-      question: 'What happens after the event?',
-      answer:
-        'We return after your event to collect the flower bar display and reusable setup pieces. Your guests take their bouquets home with them.',
     },
     {
       question: 'Do guests need any experience arranging flowers?',
@@ -204,6 +209,11 @@ export const faq = {
       answer:
         'Yes, with appropriate weather conditions and a protected location. Flowers should be kept out of direct sun and extreme heat, and outdoor events should have a covered or indoor backup location in case of rain or severe weather.',
     },
+    {
+      question: 'What happens after the event?',
+      answer:
+        'We return after your event to collect the flower bar display and reusable setup pieces. Your guests take their bouquets home with them.',
+    }
   ],
 } as const;
 

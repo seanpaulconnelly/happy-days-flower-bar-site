@@ -9,8 +9,8 @@
  * `mode` is a parameter, never read from the environment here.
  */
 
-import { PREVIEW_URL } from './types';
-import type { LinkTag, MetaTag, SeoImage, SeoMeta, SeoSite, SiteMode } from './types';
+import { PREVIEW_URL } from './types.ts';
+import type { LinkTag, MetaTag, SeoImage, SeoMeta, SeoSite, SiteMode } from './types.ts';
 
 export interface BuildMetaInput {
   readonly site: SeoSite;

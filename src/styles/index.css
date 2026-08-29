@@ -20,9 +20,16 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  /* Anchor targets clear the sticky header. */
+  /* Anchor targets clear the sticky header: its height + 8 px, at both header
+     heights (56 px below md, 72 px from md up). ux-spec §2. */
   [id] {
-    scroll-margin-top: var(--spacing-scroll-offset, 5rem);
+    scroll-margin-top: calc(var(--spacing-header, 3.5rem) + 0.5rem);
+  }
+
+  @media (min-width: 768px) {
+    [id] {
+      scroll-margin-top: var(--spacing-scroll-offset, 5rem);
+    }
   }
 
   body {
@@ -32,9 +39,11 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Prevent a stray wide element from scrolling the whole page sideways. */
+  /* Prevent a stray wide element from scrolling the whole page sideways.
+     `clip`, not `hidden`: `overflow-x: hidden` turns <body> into a scroll
+     container, which silently breaks `position: sticky` on the header. */
   body {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {

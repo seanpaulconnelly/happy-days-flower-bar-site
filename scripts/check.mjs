@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * `npm run check` runner: typecheck -> lint -> check:copy -> check:config -> build.
+ * `npm run check` runner:
+ *   typecheck -> lint -> check:config -> build -> check:seo -> check:copy.
  *
  *   npm run check
  *   npm run check -- --allow-todos      # used by the CI workflow for preview deploys
@@ -33,6 +34,8 @@ const steps = [
     args: ['run', 'check:config', ...(allowTodos ? ['--', '--allow-todos'] : [])],
   },
   { name: 'build', cmd: 'npx', args: ['vite', 'build'] },
+  // Reads dist/index.html, so it has to follow the build (request SEO-2).
+  { name: 'check:seo', cmd: npm, args: ['run', 'check:seo'] },
   {
     name: 'check:copy',
     cmd: npm,

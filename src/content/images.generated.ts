@@ -7,7 +7,7 @@
  * back at `images.ts` for the alt text, `slot` at where the rendition is used.
  * `src` paths are root-relative — `<Picture>` prefixes `import.meta.env.BASE_URL`.
  */
-import type { ImageKey, ImageSlot } from './images';
+import type { ImageKey, ImageSlot } from './images.ts';
 
 export type GeneratedSource = {
   /** Intrinsic width in px, for the `srcset` `w` descriptor. */

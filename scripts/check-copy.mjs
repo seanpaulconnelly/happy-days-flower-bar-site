@@ -6,11 +6,19 @@
  *
  *   node scripts/check-copy.mjs [--url http://...] [--skip-until-phase-5]
  *
+ * It also asserts that `public/llms.txt` has not drifted from `copy.ts`
+ * (request SEO-7): that file duplicates approved copy by design, so the eight
+ * FAQ answers and the four package price strings must still appear in it. That
+ * part runs even under --skip-until-phase-5, because llms.txt is static and
+ * does not wait for the sections to be built.
+ *
  * `copy.ts` is imported directly: Node >= 22.6 strips TypeScript types
  * natively, and this repo runs on a newer Node than that (checked below).
  */
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { chromium } from 'playwright';
-import { ensurePreview, launchOptions, parseArgs, waitForPaint } from './lib/preview.mjs';
+import { ensurePreview, launchOptions, parseArgs, repoRoot, waitForPaint } from './lib/preview.mjs';
 
 const [major, minor] = process.versions.node.split('.').map(Number);
 if (major < 22 || (major === 22 && minor < 6)) {
@@ -89,11 +97,48 @@ function normalise(text) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
+    // llms.txt is hand-wrapped and uses straight quotes; copy.ts uses
+    // typographic marks (decision D3). Fold both so the comparison is about
+    // words, not about which apostrophe glyph a file happens to carry.
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
+/**
+ * SEO-7: `public/llms.txt` restates approved copy for answer engines, so it
+ * silently rots when copy.ts changes. Assert the strings that carry facts.
+ */
+function checkLlmsTxt() {
+  const path = resolve(repoRoot, 'public/llms.txt');
+  const haystack = normalise(readFileSync(path, 'utf8'));
+  const required = [
+    ...copy.faq.items.map((item) => ({ label: 'faq answer', text: item.answer })),
+    ...[...copy.packages.items, copy.packages.custom].map((pkg) => ({
+      label: `price (${pkg.name})`,
+      text: pkg.price,
+    })),
+  ];
+  const missing = required.filter((entry) => !haystack.includes(normalise(entry.text)));
+
+  console.log(
+    `check-copy: llms.txt ${required.length - missing.length}/${required.length} approved string(s) present.`,
+  );
+  if (missing.length === 0) return;
+
+  console.error('\nFAIL: public/llms.txt has drifted from src/content/copy.ts:');
+  for (const entry of missing) {
+    const text = entry.text.length > 90 ? `${entry.text.slice(0, 90)}...` : entry.text;
+    console.error(`  - ${entry.label}: ${text}`);
+  }
+  process.exit(1);
+}
+
 const expected = canonicalStrings();
+
+// Independent of the rendered page, so it runs in every phase.
+checkLlmsTxt();
 
 if (skip) {
   console.warn(

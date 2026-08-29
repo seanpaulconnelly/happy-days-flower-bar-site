@@ -7,7 +7,7 @@
  * `import.meta.env` read is guarded and overridable via the `base` argument —
  * `vite.config.ts` should pass its own `base` rather than rely on the fallback.
  */
-import type { GeneratedImage, GeneratedSource } from '../content/images.generated';
+import type { GeneratedImage, GeneratedSource } from '../content/images.generated.ts';
 
 /** Vite's base in the browser bundle; `/` when imported from Node. */
 export function baseUrl(): string {
@@ -61,3 +61,25 @@ export function preloadLinkFor(
     href: withBase(widest(sources).src, base),
   };
 }
+
+/**
+ * `sizes` per image slot, verbatim from `docs/design-spec.md` §9. Shared so the
+ * `<Picture>` call and the build-time preload link can never drift apart —
+ * a mismatch makes the browser download the hero twice.
+ */
+export const SIZES = {
+  hero: '(min-width: 768px) 52vw, 100vw',
+  intro: '(min-width: 768px) 46vw, 100vw',
+  about: '(min-width: 768px) 46vw, 100vw',
+  why: '(min-width: 1024px) 22rem, 30vw',
+  gallery: '(min-width: 1024px) 25vw, 50vw',
+} as const;
+
+/**
+ * The hero is art-directed (design-spec §6.3/§9): the native 3:4 crop from the
+ * `md` breakpoint up, a 1:1 crop below it. These two conditions are used by the
+ * `<picture>` `<source media>` attributes *and* by the two `<link rel="preload"
+ * media>` tags, so exactly one hero file is ever fetched.
+ */
+export const HERO_DESKTOP_MEDIA = '(min-width: 768px)';
+export const HERO_MOBILE_MEDIA = '(max-width: 767.98px)';

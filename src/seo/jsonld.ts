@@ -11,8 +11,8 @@
  * Rationale for every node: `docs/seo-aeo-spec.md` §5.
  */
 
-import { PREVIEW_URL } from './types';
-import type { SeoFaq, SeoImage, SeoPackage, SeoSite, SiteMode } from './types';
+import { PREVIEW_URL } from './types.ts';
+import type { SeoFaq, SeoImage, SeoPackage, SeoSite, SiteMode } from './types.ts';
 
 export type JsonLdValue = string | number | boolean | JsonLdNode | JsonLdValue[];
 export interface JsonLdNode {
