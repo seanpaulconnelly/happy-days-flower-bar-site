@@ -1,16 +1,19 @@
 import Container from './components/Container';
 import SectionHeading from './components/SectionHeading';
 import { copy } from './content/copy';
+import FlowerBarIntro from './sections/FlowerBarIntro';
 import Footer from './sections/Footer';
 import Header from './sections/Header';
 import Hero from './sections/Hero';
+import HowItWorks from './sections/HowItWorks';
+import Packages from './sections/Packages';
 
 /**
- * Page shell. Section order and anchor ids are ux-spec §1; only the Hero,
- * Header and Footer are built in batch 5a — the other eight sections render
- * their approved H2 inside the page container so the anchors, the heading
- * outline and the `aria-labelledby` wiring are real from the first batch.
- * Batches 5b–5e replace each `<Placeholder>` body in place.
+ * Page shell. Section order and anchor ids are ux-spec §1. Built so far:
+ * Header, Hero, Footer (5a) and Flower Bar Intro, How It Works, Packages (5b).
+ * The sections still to come render their approved H2 inside a `<Placeholder>`
+ * so the anchors, the heading outline and the `aria-labelledby` wiring are real
+ * from the first batch; batches 5c–5e replace each placeholder in place.
  *
  * React renders no document metadata and no `ld+json`: the head is injected at
  * build time by the `happy-days-seo-head` plugin in `vite.config.ts` (SEO-1).
@@ -76,9 +79,9 @@ export default function App() {
       <main id="main">
         <Hero />
         {/* Sections 2–9, ux-spec §1 order. Headings are the approved H2s. */}
-        <Placeholder id="flower-bar" heading={copy.flowerBarIntro.heading} />
-        <Placeholder id="how-it-works" heading={copy.howItWorks.heading} surface="surface-alt" />
-        <Placeholder id="packages" heading={copy.packages.heading} />
+        <FlowerBarIntro />
+        <HowItWorks />
+        <Packages />
         <Placeholder id="why" heading={copy.whyHappyDays.heading} />
         <Placeholder id="gallery" heading={copy.gallery.heading} surface="surface-alt" />
         <Placeholder id="about" heading={copy.about.heading} />
