@@ -4,7 +4,7 @@
  *
  *   node scripts/screenshots.mjs [--url http://...] [--label baseline]
  *
- * Writes docs/qa/screenshots/<label>/{375,768,1280,1536}.png plus
+ * Writes docs/qa/screenshots/<label>/{320,375,768,1280,1536}.png plus
  * 375-scrolled.png (375 viewport after scrolling 1200px, to check the sticky
  * header/CTA). Asserts no horizontal overflow at every width and prints the
  * offending selectors. Exits non-zero on overflow.
@@ -21,7 +21,7 @@ import {
   waitForPaint,
 } from './lib/preview.mjs';
 
-const WIDTHS = [375, 768, 1280, 1536];
+const WIDTHS = [320, 375, 768, 1280, 1536];
 const HEIGHT = 900;
 
 const args = parseArgs();

@@ -106,21 +106,46 @@ export function launchOptions(chromium) {
   );
 }
 
-/** Wait for web fonts and every <img> to settle. */
+/**
+ * Wait for web fonts and every <img> to settle.
+ *
+ * Every image below the hero is `loading="lazy"`, and a lazy image that has
+ * never come near the viewport stays `complete === false` forever — waiting on
+ * its `load` event hangs. So walk the page top to bottom first to bring them
+ * all into range, return to the top, and then wait, with a ceiling so one
+ * stalled request cannot block the sweep.
+ */
 export async function waitForPaint(page) {
   await page.evaluate(async () => {
+    // `index.css` sets `scroll-behavior: smooth`, which turns every scrollTo
+    // into an animation the loop below would out-run; force instant jumps for
+    // the duration of the pass and put the declaration back afterwards.
+    const root = document.documentElement;
+    const previous = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    const step = Math.max(200, Math.round(window.innerHeight * 0.8));
+    for (let y = 0; y < root.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((done) => setTimeout(done, 80));
+    }
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previous;
+  });
+  await page.evaluate(async () => {
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
-    await Promise.all(
-      Array.from(document.images)
-        .filter((img) => !img.complete)
-        .map(
-          (img) =>
-            new Promise((done) => {
-              img.addEventListener('load', done, { once: true });
-              img.addEventListener('error', done, { once: true });
-            }),
-        ),
-    );
+    const settled = Array.from(document.images)
+      .filter((img) => !img.complete)
+      .map(
+        (img) =>
+          new Promise((done) => {
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+          }),
+      );
+    await Promise.race([
+      Promise.all(settled),
+      new Promise((done) => setTimeout(done, 10000)),
+    ]);
   });
   await page.waitForTimeout(200);
 }
