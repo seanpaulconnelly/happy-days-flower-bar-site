@@ -11,8 +11,10 @@ import { cn } from '../lib/cn';
  * primary CTA lives on the band and is not repeated below it (design-spec §14
  * item 3, decision D12), so the section holds exactly one primary button.
  *
- * Cards stack on phones and go three across from `md` (768 px: 3 × ≥ 224 px
- * with `gap-6`), stretched to equal heights by the grid. Name → guest range →
+ * Cards stack on phones and go three across from `md` (768 px: 3 × 224.5 px
+ * with `md:gap-x-4`, clearing ux-spec §4.4's 220 px threshold), stretched to
+ * equal heights by the grid. Padding is `p-7 md:p-6 lg:p-8`: the tablet step
+ * down buys the descriptions a 21–22 ch measure instead of 19 (review 5bc-04). Name → guest range →
  * price → description is the top-down scan path; prices are tabular lining
  * figures so `$895 / $1,495 / $1,995` align across the row.
  *
@@ -31,14 +33,17 @@ import { cn } from '../lib/cn';
  * The band keeps design-spec §6.6's `p-7 md:p-8` from `sm` up but drops to
  * `p-6` below it: at 320 px the spec's padding leaves 224 px inside the band
  * and "Inquire About Your Date" needs 226 px, so the primary CTA's label broke
- * onto two lines. 8 px of padding buys the label back.
+ * onto two lines. 8 px of padding buys the label back. There is no `lg:px-10`
+ * (review 5bc-05) so the band's text aligns with the card text above it, and
+ * its guest-range line is `text-balance` so 320 px breaks it at the dash
+ * rather than orphaning the last word (5bc-06).
  *
  * The footnote is set roman, small and muted rather than italic (decision D11)
  * and is constrained to the prose measure so a 140-character line does not run
  * the full 1152 px container.
  */
 const CARD_BASE =
-  'flex flex-col rounded-card bg-surface-alt p-7 md:p-8 border border-border md:row-span-5 md:grid md:grid-rows-subgrid';
+  'flex flex-col rounded-card bg-surface-alt p-7 md:p-6 lg:p-8 border border-border md:row-span-5 md:grid md:grid-rows-subgrid';
 
 export default function Packages() {
   return (
@@ -52,7 +57,7 @@ export default function Packages() {
             md keeps the cards' internal rhythm the spec's `mt-*` values. */}
         <ul
           role="list"
-          className="mt-stack grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-[auto_auto_auto_auto_1fr] md:gap-y-0 lg:gap-x-8"
+          className="mt-stack grid grid-cols-1 gap-6 md:grid-cols-3 md:grid-rows-[auto_auto_auto_auto_1fr] md:gap-x-4 md:gap-y-0 lg:gap-x-8"
         >
           {packages.items.map((item) => (
             <li
@@ -80,11 +85,11 @@ export default function Packages() {
 
         <div
           data-surface="brand"
-          className="mt-6 flex flex-col gap-6 rounded-card bg-surface-brand p-6 text-on-brand sm:p-7 md:flex-row md:items-center md:justify-between md:p-8 lg:mt-8 lg:px-10"
+          className="mt-6 flex flex-col gap-6 rounded-card bg-surface-brand p-6 text-on-brand sm:p-7 md:flex-row md:items-center md:justify-between md:p-8 lg:mt-8"
         >
           <div>
             <h3 className="font-display text-h3 text-on-brand">{packages.custom.name}</h3>
-            <p className="text-lead mt-1 text-on-brand-muted tabular-nums">
+            <p className="text-lead mt-1 text-on-brand-muted tabular-nums text-balance">
               {`${packages.custom.guests} — ${packages.custom.price}`}
             </p>
             <p className="text-body mt-3 max-w-[38rem] text-on-brand">

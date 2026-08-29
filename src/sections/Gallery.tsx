@@ -15,6 +15,10 @@ import { SIZES } from '../lib/images';
  * frames and the warm-white ground disappears behind it (design-spec §7). Two
  * across on phone and tablet, four across from `lg`.
  *
+ * The section is `pt-section` only (review 5bc-01): the strip is its last child
+ * and closes it flush, so the warm-white ground shows above the photographs and
+ * never as a band beneath them. The gap to About is About's own `pt-section`.
+ *
  * No lightbox, no captions, no hover state (ux-spec §4.6): the alt text does
  * the describing, and every photograph is already shown at the width the
  * layout gives it. Radius 0 here — the rounded corners elsewhere and the
@@ -36,7 +40,7 @@ const STRIP = [
 
 export default function Gallery() {
   return (
-    <section id="gallery" aria-labelledby="gallery-heading" className="bg-surface-alt py-section">
+    <section id="gallery" aria-labelledby="gallery-heading" className="bg-surface-alt pt-section">
       <Container>
         <SectionHeading id="gallery-heading" heading={gallery.heading} lead={gallery.body} />
 

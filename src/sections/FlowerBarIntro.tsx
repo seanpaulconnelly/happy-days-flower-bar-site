@@ -25,8 +25,8 @@ import { SIZES } from '../lib/images';
 export default function FlowerBarIntro() {
   return (
     <section id="flower-bar" aria-labelledby="flower-bar-heading" className="bg-surface py-section">
-      <Container className="flex flex-col md:flex-row-reverse md:items-center md:gap-12 lg:gap-16">
-        <div className="md:w-[54%]">
+      <Container className="flex flex-col md:flex-row-reverse md:items-center md:gap-8 lg:gap-16">
+        <div className="md:w-[58%] lg:w-[54%]">
           <SectionHeading
             id="flower-bar-heading"
             heading={flowerBarIntro.heading}
@@ -53,7 +53,7 @@ export default function FlowerBarIntro() {
           </div>
         </div>
 
-        <div className="mt-10 md:mt-0 md:w-[46%]">
+        <div className="mt-10 md:mt-0 md:w-[42%] lg:w-[46%]">
           <Picture
             image={generatedImages.flowerBarCloseupIntro}
             alt={images.flowerBarCloseup.alt}

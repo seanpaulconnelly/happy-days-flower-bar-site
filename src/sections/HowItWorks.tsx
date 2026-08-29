@@ -7,7 +7,9 @@ import { howItWorks } from '../content/copy';
  *
  * An `<ol>` because the content is a sequence: stacked on phones, 2×2 on
  * tablet, four across from `lg`, where a hairline above each item makes the
- * row read as a shelf.
+ * row read as a shelf. From `lg` each item is a three-row subgrid (numeral,
+ * title, body) so the four paragraphs start on one line however a title wraps
+ * (review 5bc-02); below `lg` the items are plain blocks with `gap-y-10`.
  *
  * The numeral is data (`copy.howItWorks.steps[].number`), never typed inline.
  * It is rendered twice on purpose: once large and `aria-hidden` as the visible
@@ -25,9 +27,12 @@ export default function HowItWorks() {
       <Container>
         <SectionHeading id="how-it-works-heading" heading={howItWorks.heading} />
 
-        <ol className="mt-stack grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-stack grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto_1fr] lg:gap-y-0">
           {howItWorks.steps.map((step) => (
-            <li key={step.number} className="lg:border-t lg:border-line lg:pt-6">
+            <li
+              key={step.number}
+              className="lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:border-t lg:border-line lg:pt-6"
+            >
               <span
                 aria-hidden="true"
                 className="block font-display text-step text-accent-orange-ink"

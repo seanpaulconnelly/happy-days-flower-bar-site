@@ -12,8 +12,11 @@ import { SIZES } from '../lib/images';
  * The only section where the image leads on mobile: its job is warmth and
  * trust, the photograph carries that, and it breaks the text-first rhythm of
  * the five sections above it. The DOM order (image, then H2 and the two
- * paragraphs) is also the desktop order — image left at 46 %, text right — so
- * one source order serves both widths and nothing is reordered visually.
+ * paragraphs) is also the desktop order — image left, text right — so one
+ * source order serves both widths and nothing is reordered visually. The split
+ * is 42/58 with `gap-8` at `md` and the documented 46/54 with `gap-16` from
+ * `lg`: at 768 px the narrower text column broke the H2 mid-sentence (review
+ * 5bc-03). `FlowerBarIntro` mirrors the same three values.
  *
  * H2 plus two paragraphs verbatim and nothing else: no bio bullets, no name,
  * no caption (R10). The `about` rendition is a 4:5 still life, not a portrait
@@ -24,8 +27,8 @@ import { SIZES } from '../lib/images';
 export default function About() {
   return (
     <section id="about" aria-labelledby="about-heading" className="bg-surface py-section">
-      <Container className="flex flex-col md:flex-row md:items-center md:gap-12 lg:gap-16">
-        <div className="md:w-[46%]">
+      <Container className="flex flex-col md:flex-row md:items-center md:gap-8 lg:gap-16">
+        <div className="md:w-[42%] lg:w-[46%]">
           <Picture
             image={generatedImages.about}
             alt={images.about.alt}
@@ -34,7 +37,7 @@ export default function About() {
           />
         </div>
 
-        <div className="mt-10 md:mt-0 md:w-[54%]">
+        <div className="mt-10 md:mt-0 md:w-[58%] lg:w-[54%]">
           <SectionHeading id="about-heading" heading={about.heading} align="left" />
 
           <div className="mt-6 max-w-prose-copy space-y-4">
