@@ -135,8 +135,14 @@ returns `404 Not Found` — i.e. **no Pages site exists on the repository yet**,
 not readable without a token (`.../actions/jobs/<id>/logs` → `403 Must have admin
 rights to Repository`); open the run URL above in a browser to see it.
 
-Nothing in the repository needs changing. After the click, use **Re-run all
-jobs** on the most recent run.
+The failure is **reproducible, not transient**: the second push (run
+[33265484338](https://github.com/seanpaulconnelly/happy-days-flower-bar-site/actions/runs/33265484338))
+failed at the same step 6 with the same steps 7–9 skipped.
+
+Nothing in the repository needs changing — no code fix would help, because the
+build never runs. After the click, use **Re-run all jobs** on the most recent
+run on the Actions tab; the remaining Phase 8 verification (§1.5) then resumes
+with no further pushes.
 
 ### 1.5 Verify
 
