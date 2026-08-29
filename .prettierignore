@@ -1,0 +1,6 @@
+dist
+node_modules
+docs/qa/screenshots
+docs/qa/lighthouse.json
+public/images
+src/content/images.generated.ts

@@ -1,0 +1,54 @@
+/*
+  Fonts first: CSS `@import` must precede every other rule, and Tailwind 4's
+  `@import "tailwindcss"` expands into real rules. Both packages are 5.3.0 / OFL
+  and declare `font-display: swap` with `unicode-range` subsets, so a latin-only
+  page fetches only `*-latin-*.woff2` (design-spec §4.1, request Q1).
+*/
+@import "@fontsource-variable/newsreader/opsz.css"; /* wght 200-800 + opsz 6-72 */
+@import "@fontsource-variable/work-sans/index.css"; /* wght 100-900 */
+@import "tailwindcss";
+@import "./theme.css";
+
+/*
+  Base styles only. Design tokens live in `theme.css` (`@theme`), owned by the
+  ui-designer (decision D1); never declare colours, fonts or sizes here.
+*/
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Anchor targets clear the sticky header. */
+  [id] {
+    scroll-margin-top: var(--spacing-scroll-offset, 5rem);
+  }
+
+  body {
+    background-color: var(--color-cream, #f7f2ea);
+    color: var(--color-charcoal, #26231f);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevent a stray wide element from scrolling the whole page sideways. */
+  body {
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

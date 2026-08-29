@@ -1,0 +1,87 @@
+# https://happydaysflowers.com/robots.txt
+# Happy Days Flower Farm — Greensburg, Pennsylvania
+#
+# Policy: OPEN. Search crawlers and AI / answer-engine crawlers are all allowed.
+# Decided 2026-08-29 (build plan §8, Q19): the goal is to be found and cited when
+# someone asks a search engine or an assistant for a pop-up flower bar near
+# Pittsburgh. There is nothing private on this site.
+#
+# The named groups below are documentation, not restriction: a crawler that
+# matches its own group ignores the `*` group entirely, so listing them keeps the
+# policy explicit and audit-able if `*` is ever narrowed.
+# Bot names verified 2026-08-29 against the operators' own crawler docs —
+# see docs/seo-aeo-spec.md §8 for sources.
+#
+# NOTE: this file always describes the canonical host. The temporary GitHub Pages
+# URL is kept out of the index with `<meta name="robots" content="noindex,nofollow">`
+# injected at build time (decision D5), not with a Disallow here.
+
+User-agent: *
+Allow: /
+
+# --- Search engines -----------------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# --- AI / answer engines: model training --------------------------------------
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# --- AI / answer engines: retrieval, search and citation ----------------------
+# These are the ones that matter for AEO — they fetch the page when a user asks
+# an assistant a question, and they produce the citation link.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+Sitemap: https://happydaysflowers.com/sitemap.xml

@@ -1,0 +1,213 @@
+/*
+  Happy Days Flower Farm — design tokens (Tailwind 4 `@theme`).
+  Owned by ui-designer. The contract is documented in docs/design-spec.md;
+  every component is described there in terms of these names.
+
+  Palette source: website-spec.md (seven colours). Derived shades were measured
+  for WCAG AA in design-spec.md §3 — do not adjust them without re-measuring.
+  `index.css` imports Tailwind and this file; nothing else belongs here.
+*/
+
+@theme {
+  /* ---------- 1. Base palette (verbatim from the brief) ---------- */
+  --color-cream: #f7f2ea;
+  --color-charcoal: #26231f;
+  --color-green: #435b47;
+  --color-lavender: #d9c8e8;
+  --color-orange: #e8884a;
+  --color-mint: #bfd9c3;
+  --color-warm-white: #fffdf9;
+
+  /* ---------- 2. Derived shades (measured, see design-spec §3) ---------- */
+  --color-green-deep: #34483a; /* hover fill; green text on cream 8.83:1 */
+  --color-orange-deep: #a84e17; /* orange as *text* on cream 5.00:1 */
+  --color-orange-bright: #f09a64; /* hover of the orange CTA; charcoal on it 7.08:1 */
+  --color-ink-soft: #5c574f; /* muted body text, 6.43:1 on cream */
+  --color-sage: #d6dfd6; /* muted text on green, 5.44:1 */
+  --color-sand: #e3dbcf; /* hairlines, card borders (decorative) */
+  --color-stone: #8a8277; /* form-field borders, 3.73:1 on warm white */
+  --color-mint-tint: #e6f0e7; /* success panel ground */
+  --color-error: #9e3628; /* error text, 6.86:1 on warm white */
+  --color-error-tint: #f6e4df; /* error panel ground */
+
+  /* ---------- 3. Semantic aliases (use these in components) ---------- */
+  /* Surfaces — at most three across the whole page. */
+  --color-surface: var(--color-cream);
+  --color-surface-alt: var(--color-warm-white);
+  --color-surface-brand: var(--color-green);
+
+  /* Text */
+  --color-ink: var(--color-charcoal);
+  --color-ink-muted: var(--color-ink-soft);
+  --color-on-brand: var(--color-warm-white);
+  --color-on-brand-muted: var(--color-sage);
+
+  /* Brand */
+  --color-brand: var(--color-green);
+  --color-brand-ink: var(--color-green-deep);
+
+  /* Accents — restrained; each has one or two jobs (design-spec §2.3) */
+  --color-accent-orange: var(--color-orange);
+  --color-accent-orange-ink: var(--color-orange-deep);
+  --color-accent-orange-hover: var(--color-orange-bright);
+  --color-accent-lavender: var(--color-lavender);
+  --color-accent-mint: var(--color-mint);
+  --color-accent-mint-tint: var(--color-mint-tint);
+
+  /* Lines and fields */
+  --color-line: var(--color-sand);
+  --color-border: var(--color-sand);
+  --color-border-strong: var(--color-stone);
+
+  /* States */
+  --color-danger: var(--color-error);
+  --color-danger-tint: var(--color-error-tint);
+  --color-focus: var(--color-green); /* overridden on brand surfaces, see @layer base */
+
+  /* ---------- 4. Type ---------- */
+  --font-display: "Newsreader Variable", Newsreader, Georgia, "Times New Roman", serif;
+  --font-body:
+    "Work Sans Variable", "Work Sans", system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  /* Make Tailwind's defaults resolve to ours so `font-sans`/`font-serif` and
+     the body default are never a third family. */
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+
+  /* Fluid scale — one token per role; utilities: text-display, text-h2 … */
+  --text-display: clamp(2.75rem, 1.9rem + 3.6vw, 4.75rem); /* 44 → 76 px */
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.015em;
+  --text-display--font-weight: 500;
+
+  --text-h2: clamp(2rem, 1.55rem + 1.9vw, 3rem); /* 32 → 48 px */
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: -0.01em;
+  --text-h2--font-weight: 500;
+
+  --text-h3: clamp(1.375rem, 1.27rem + 0.45vw, 1.625rem); /* 22 → 26 px */
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: 0em;
+  --text-h3--font-weight: 500;
+
+  --text-price: clamp(2.25rem, 1.95rem + 1.25vw, 2.875rem); /* 36 → 46 px */
+  --text-price--line-height: 1;
+  --text-price--letter-spacing: -0.01em;
+  --text-price--font-weight: 500;
+
+  --text-step: clamp(2.5rem, 2.1rem + 1.7vw, 3.375rem); /* 40 → 54 px */
+  --text-step--line-height: 1;
+  --text-step--letter-spacing: -0.01em;
+  --text-step--font-weight: 400;
+
+  --text-lead: clamp(1.125rem, 1.06rem + 0.3vw, 1.3125rem); /* 18 → 21 px */
+  --text-lead--line-height: 1.5;
+
+  --text-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem); /* 16 → 17 px */
+  --text-body--line-height: 1.6;
+
+  --text-small: 0.875rem; /* 14 px */
+  --text-small--line-height: 1.5;
+
+  --text-eyebrow: 0.8125rem; /* 13 px, uppercase, tracked */
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.12em;
+  --text-eyebrow--font-weight: 600;
+
+  --text-chip: 0.75rem; /* 12 px, uppercase, tracked */
+  --text-chip--line-height: 1;
+  --text-chip--letter-spacing: 0.08em;
+  --text-chip--font-weight: 600;
+
+  --text-wordmark: 1.25rem; /* header ≥ sm */
+  --text-wordmark--line-height: 1;
+  --text-wordmark--letter-spacing: 0.005em;
+  --text-wordmark--font-weight: 500;
+
+  --text-wordmark-sm: 0.9375rem; /* stacked two-line lockup < sm */
+  --text-wordmark-sm--line-height: 1.05;
+  --text-wordmark-sm--letter-spacing: 0.005em;
+  --text-wordmark-sm--font-weight: 500;
+
+  --text-wordmark-lg: 1.5rem; /* footer */
+  --text-wordmark-lg--line-height: 1;
+  --text-wordmark-lg--letter-spacing: 0.005em;
+  --text-wordmark-lg--font-weight: 500;
+
+  /* ---------- 5. Layout rhythm ---------- */
+  /* Tailwind's 0.25rem spacing scale stays. These add named rhythm tokens:
+     py-section, px-gutter, h-header, scroll-mt-scroll-offset, gap-strip … */
+  --spacing-section: clamp(4rem, 2.5rem + 6vw, 8rem); /* 64 → 128 px */
+  --spacing-section-sm: clamp(3rem, 2rem + 4vw, 5rem); /* 48 → 80 px */
+  --spacing-gutter: clamp(1.25rem, 0.75rem + 2.5vw, 2.5rem); /* 20 → 40 px */
+  --spacing-stack: clamp(2rem, 1.5rem + 2vw, 3.5rem); /* heading → content */
+  --spacing-header: 3.5rem; /* 56 px, < md */
+  --spacing-header-lg: 4.5rem; /* 72 px, ≥ md */
+  --spacing-scroll-offset: calc(var(--spacing-header-lg) + 0.5rem);
+  --spacing-strip: 0.5rem; /* gallery gutter */
+  --spacing-field: 3rem; /* input height, 48 px */
+  --spacing-tap: 2.75rem; /* minimum tap target, 44 px */
+
+  /* Containers → max-w-site, max-w-prose-copy, max-w-form, max-w-faq */
+  --container-site: 72rem; /* 1152 px */
+  --container-prose-copy: 40rem; /* ≈ 65ch of body copy */
+  --container-form: 38rem; /* 608 px */
+  --container-faq: 44rem; /* 704 px */
+
+  /* Breakpoints: Tailwind defaults (sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536). */
+
+  /* ---------- 6. Radius (named by use; Tailwind's scale stays) ---------- */
+  --radius-field: 0.5rem; /* inputs, status panels */
+  --radius-card: 0.75rem; /* cards, custom band, form card */
+  --radius-photo: 1rem; /* intro / about images */
+  --radius-hero: 1.25rem; /* hero image (inner corners only, see spec) */
+
+  /* ---------- 7. Shadow ---------- */
+  --shadow-card: 0 1px 2px rgb(38 35 31 / 0.04), 0 12px 32px -12px rgb(38 35 31 / 0.12);
+  --shadow-form: 0 24px 48px -24px rgb(20 30 22 / 0.45);
+
+  /* ---------- 8. Motion (one orchestrated reveal — the hero) ---------- */
+  --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --animate-rise: rise 600ms var(--ease-soft) both;
+  --animate-fade: fade 700ms ease-out both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  /* Variable-font hygiene: let Newsreader pick its optical size from the
+     rendered size; never synthesise bold/italic we did not ship. */
+  html {
+    font-optical-sizing: auto;
+    font-synthesis: none;
+  }
+
+  /* One focus ring for the whole site: brand green, 2 px, offset 2 px.
+     Only for keyboard focus; pointer focus keeps the browser default off. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* On deep-green surfaces the green ring would vanish; swap it for warm
+     white (7.31:1). Mark brand-surface sections with data-surface="brand". */
+  [data-surface="brand"] {
+    --color-focus: var(--color-on-brand);
+  }
+}

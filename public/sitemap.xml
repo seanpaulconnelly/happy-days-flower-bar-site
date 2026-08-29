@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Single-page site: one URL, the apex canonical.
+  `changefreq` and `priority` are omitted deliberately — Google has ignored both
+  for years and Bing treats them as advisory noise. `lastmod` is the only hint
+  that is still read, and it must be honest: bump it when the page copy changes,
+  not on every deploy.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://happydaysflowers.com/</loc>
+    <lastmod>2026-08-29</lastmod>
+  </url>
+</urlset>

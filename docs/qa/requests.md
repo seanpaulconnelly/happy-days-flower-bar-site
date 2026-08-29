@@ -1,0 +1,93 @@
+# Cross-agent requests
+
+Requests for changes outside the requesting agent's file ownership. The owner of the target file resolves the row and marks it done. Newest at the bottom.
+
+| #   | Date       | From → To                       | Request                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Status |
+| --- | ---------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Q1  | 2026-08-29 | ui-designer → frontend-engineer | **Fonts.** `npm i @fontsource-variable/newsreader @fontsource-variable/work-sans` (both 5.3.0, OFL). In `src/styles/index.css` add `@import '@fontsource-variable/newsreader/opsz.css';` and `@import '@fontsource-variable/work-sans/index.css';` (see `docs/design-spec.md` §4.1). No italic files. Optional: preload the two latin `.woff2` files in `index.html`.                                                                                                     | done (Phase 4) |
+| Q2  | 2026-08-29 | ui-designer → frontend-engineer | **Focal crops in `scripts/build-images.mjs`.** Add per-slot `{ ratio, focalY }` support: `h = round(1152 / ratio)`, `top = clamp(round(focalY * 1536 - h / 2), 0, 1536 - h)`, `extract({ left: 0, top, width: 1152, height: h })` before resizing. Values per slot are in `docs/design-spec.md` §9 (hero 1:1 `0.57`, OG `0.535`, gallery squares `0.51/0.51/0.42/0.44`, trio/about 4:5 `0.475/0.50/0.50/0.49`). The OG image is the hero at 1152×605 resized to 1200×630. | done (Phase 4) |
+| Q3  | 2026-08-29 | ui-designer → frontend-engineer | **Icons.** `index.html`: `<link rel="icon" type="image/svg+xml" href="/favicon.svg">` and `<meta name="theme-color" content="#F7F2EA">`. Render `public/apple-touch-icon.png` (180×180) from `public/favicon.svg` with sharp inside `build-images.mjs` and link it.                                                                                                                                                                                                       | done (Phase 4) |
+| Q4  | 2026-08-29 | ui-designer → frontend-engineer | **Bucket clipPath (signature element).** Inline the `<svg width="0" height="0">` `<clipPath id="bucket">` from `docs/design-spec.md` §10 once in `App.tsx`; apply `clip-path: url(#bucket)` only to the three Why Happy Days images. Mark the Custom band and the Inquiry section with `data-surface="brand"` so the focus ring switches to warm white (`theme.css` base layer).                                                                                          | open   |
+| Q5  | 2026-08-29 | ui-designer → orchestrator      | **Footnote italics.** The packages footnote is italic in `website-spec.md`; the design ships no italic font files (≈ 130 KB) and sets it roman, `text-small text-ink-muted`. Copy unchanged. Confirm or ask for the italic file to be added.                                                                                                                                                                                                                              | resolved by orchestrator — roman, small, muted (decisions D11) |
+| Q6  | 2026-08-29 | ui-designer → orchestrator      | **Image content vs. filename.** `farm-zinnias.jpeg` is a portrait of the owner holding zinnias; `about-bethany-working.jpeg` is a delphinium vase on a brick wall (no person). ux-spec §7 alt text already describes the real content; no change needed for V1, but the About section will show a still life — worth a line in `HANDOFF.md` in case a different photo was intended.                                                                                       | resolved by orchestrator — keep spec slot mapping; flag in HANDOFF.md + build report (decisions D10, D12) |
+| SEO-1 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **Inject the head + JSON-LD at BUILD TIME, not from React.** The page is client-rendered with no prerender; most AI retrieval crawlers do not execute JS (`docs/seo-aeo-spec.md` §9), so React-rendered meta/JSON-LD would be invisible to `OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot` et al. Add the `transformIndexHtml` plugin in **Appendix SEO-A below** to `vite.config.ts`. It imports `src/seo/{meta,jsonld}` (both are pure, Node-safe, and take `mode` as a parameter). React must render **no** document metadata and **no** `<script type="application/ld+json">` — exactly one of each tag. | open |
+| SEO-2 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **Build gate.** In `scripts/check.mjs` (or a new `scripts/check-seo.mjs` wired into `npm run check`), assert on `dist/index.html` after `vite build`: exactly one `<title>`; exactly one `application/ld+json` block that `JSON.parse`s and contains `"@type":"Florist"` and `"@type":"FAQPage"`; exactly one `<meta name="description">`; and — gated on `existsSync('public/CNAME')` — a `<link rel="canonical" href="https://happydaysflowers.com/">` **and no** `noindex`; when CNAME is absent, the inverse (`noindex,nofollow` present, no canonical). Cheap, and it is the only thing that catches a regression of SEO-1. | open |
+| SEO-3 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **FAQ display order — decided.** `docs/seo-aeo-spec.md` §11.1 fixes the order as source indices **1, 4, 3, 2, 5, 7, 8, 6** → What's included · How far do you travel · How far in advance · How many flowers · Brand colors · Any experience · Outdoors/rain · After the event. **Reorder the `items` array in `src/content/copy.ts`** to that order (and update its "in source order" comment to "in SEO display order, see seo-aeo-spec §11.1"), then render the `<details>` and pass `buildJsonLd({ faqs: copy.faq.items })` from that same array. Not one word of any question or answer changes — display order only. Reordering the array (rather than an index map) makes DOM/JSON-LD divergence structurally impossible. Confirm `scripts/check-copy.mjs` compares text, not array order. | open |
+| SEO-4 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **Rename the optimised `about-bethany-working.*` outputs.** Two reasons, and Q6 above sharpens the second: (a) the file is served publicly and names a private individual; (b) per Q6 the photo contains **no person at all** — it is a delphinium still life — so the filename is also inaccurate. Suggest `about-the-farm` or `about-delphinium-vase` for the `public/images/` outputs only. The source name in the gitignored `assets-src/` stays as supplied. Low priority; skip if it costs more than a map entry. | done (Phase 5a) — outputs renamed `about-still-life-*` (decision D14) |
+| SEO-5 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **Inputs for `buildJsonLd`.** Pass the **1152 w JPEG** variants for `images` (not AVIF/WebP — crawler format support is uneven), each with real `width`/`height` and the ux-spec §7 alt as `alt`; hero first (it becomes `#primaryimage`). Pass `serviceDescription` = the Flower Bar Introduction body paragraph from `copy.ts`, and `faqHeading` = `copy.faq.heading`. Optionally add `minGuests`/`maxGuests` to the package objects (25 / 26–50 / 51–75 / 75+) — they become `Offer.eligibleQuantity`, which is what lets an engine answer "how much for 50 guests". **Constraint:** `src/config/site.ts`, `src/content/copy.ts` and `src/content/images.generated.ts` must stay free of CSS/asset imports so `vite.config.ts` can import them in Node. | open |
+| SEO-6 | 2026-08-29 | seo-aeo-specialist → orchestrator | **Two copy items needing owner/Sean approval** (`docs/seo-aeo-spec.md` §13). **A1:** the FAQ section heading is not in any approved source; recommend shipping `Frequently Asked Questions` (concurs with ux-spec §1.2) — needs Bethany's nod. **A2:** an alternative `<title>` (`Pop-Up Flower Bars in Pittsburgh & Western PA \| Happy Days Flower Farm`) is *recommended against* for launch; ship the approved one and revisit with Search Console data at ~90 days. Also A3: I am **not** requesting any keyword be added to visible copy. | resolved by orchestrator — A1: ship "Frequently Asked Questions" (decisions D8, listed for owner review in the build report); A2: keep the approved title; A3: noted |
+| SEO-7 | 2026-08-29 | seo-aeo-specialist → frontend-engineer | **Optional: `llms.txt` drift check.** `public/llms.txt` duplicates approved copy, so it will silently drift when `copy.ts` changes. If cheap, extend `scripts/check-copy.mjs` to assert that each of the 8 FAQ answers and the 4 package price strings from `copy.ts` appear verbatim in `public/llms.txt`. If not cheap, skip it and note the manual re-check in `docs/HANDOFF.md` instead (it is already in `docs/SEARCH-SETUP.md` §9). | open |
+| Q7  | 2026-08-29 | frontend-engineer → orchestrator | **Hero JPEG budget.** The Phase 4 gate is "largest hero JPEG ≤ 160 KB", but the hero crop is 1152×1536 and even at mozjpeg q68 it is 197 KB (q78 as specified: 266 KB); 160 KB needs ≈ q55, which visibly softens the sign lettering. Everything actually served is inside the budget — hero AVIF 137 KB, hero-square AVIF 121 KB, 768 px JPEG 122 KB — and the JPEG at 1152 px is the no-WebP fallback only. Shipped at the specified q78 and reported rather than silently re-encoded. Options: (a) accept, treating the gate as "largest hero rendition actually served"; (b) cap the JPEG fallback at 768 px; (c) drop hero JPEG quality to ≈ 60. | resolved by orchestrator — keep q78; the §3.4 hero gate now applies to the served formats (1152w AVIF ≤ 160 KB, 768w JPEG ≤ 160 KB), see decisions D13 |
+
+---
+
+## Appendix SEO-A — the `transformIndexHtml` plugin (for SEO-1)
+
+Add to `vite.config.ts`. `siteMode` is already computed there from `public/CNAME`
+(D5); reuse that variable so there is one switch, not two.
+
+```ts
+import type { Plugin } from 'vite';
+import { site } from './src/config/site';
+import { copy } from './src/content/copy';
+import { buildMeta, renderHeadTags } from './src/seo/meta';
+import { buildJsonLd, serializeJsonLd } from './src/seo/jsonld';
+import type { SiteMode } from './src/seo/types';
+
+function seoHead(mode: SiteMode): Plugin {
+  return {
+    name: 'happy-days-seo-head',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html: string) {
+        const ogImage = {
+          url: '/og.jpg',
+          width: 1200,
+          height: 630,
+          alt: /* ux-spec §7 OG alt, a standalone sentence */ '',
+        };
+
+        const meta = buildMeta({ site, mode, ogImage });
+        const graph = buildJsonLd({
+          site,
+          mode,
+          packages: /* the four package objects from copy.ts */ [],
+          faqs: copy.faq.items,
+          faqHeading: copy.faq.heading,
+          images: /* 1152w JPEGs from images.generated.ts, hero first */ [],
+          serviceDescription: /* Flower Bar Introduction body paragraph */ '',
+        });
+
+        const head = [
+          renderHeadTags(meta),
+          `    <script type="application/ld+json">${serializeJsonLd(graph)}</script>`,
+        ].join('\n');
+
+        return (
+          html
+            // one <title>, always the built one
+            .replace(/<title>[\s\S]*?<\/title>/i, `<title>${meta.title}</title>`)
+            // drop the hand-written description so it is not duplicated
+            .replace(/[ \t]*<meta\s+name="description"[\s\S]*?\/?>\s*\n/i, '')
+            .replace('</head>', `${head}\n  </head>`)
+        );
+      },
+    },
+  };
+}
+
+// …then in defineConfig: plugins: [react(), tailwindcss(), seoHead(siteMode)]
+```
+
+Notes:
+
+- `order: 'pre'` so the tags are in place before any other HTML transform.
+- The hook runs in **dev too**, so `npm run dev` shows the same head as production —
+  which is what makes SEO-2's assertions meaningful.
+- `index.html` keeps its `<title>` and can drop the static `<meta name="description">`
+  (the regex removes it either way). Keep `theme-color` and the icon links —
+  the plugin does not touch them.
+- `serializeJsonLd` escapes `</script` and `<!--`, so no copy string can break out
+  of the script element. Do not hand-roll `JSON.stringify` here.
+- Everything the plugin imports must be Node-safe: no CSS imports, no `?url` asset
+  imports, no `import.meta.env` reads inside `src/seo/` (see SEO-5).

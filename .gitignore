@@ -1,0 +1,10 @@
+node_modules
+dist
+docs/qa/screenshots
+docs/qa/lighthouse.json
+.lighthouseci
+.playwright-mcp/
+assets-src/
+*.local
+*.log
+.DS_Store
