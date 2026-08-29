@@ -78,3 +78,4 @@ if (failures > 0) {
   process.exit(1);
 }
 console.log('\nOK: no horizontal overflow.');
+process.exit(0);

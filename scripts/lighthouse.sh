@@ -34,7 +34,9 @@ if [ -z "${URL:-}" ]; then
     echo "port ${PORT} is already in use - stop that server and re-run." >&2
     exit 1
   fi
-  npx vite preview --port "$PORT" --strictPort >/dev/null &
+  # Run vite's bin directly so $! is vite itself (killing an `npx` wrapper
+  # leaves the real server orphaned on Linux).
+  node node_modules/vite/bin/vite.js preview --port "$PORT" --strictPort >/dev/null &
   PREVIEW_PID=$!
   URL="http://localhost:${PORT}${BASE_PATH}"
   for _ in $(seq 1 60); do

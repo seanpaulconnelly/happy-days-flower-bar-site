@@ -228,3 +228,5 @@ if (missing.length > 0 || headProblems.length > 0) {
   process.exit(1);
 }
 console.log('OK: all canonical copy is on the page.');
+// Explicit exit: never let a lingering browser/preview handle keep CI waiting.
+process.exit(0);

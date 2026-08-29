@@ -86,10 +86,22 @@ export async function ensurePreview(explicitUrl) {
     );
   }
 
-  const child = spawn('npx', ['vite', 'preview', '--port', String(PREVIEW_PORT), '--strictPort'], {
-    cwd: repoRoot,
-    stdio: ['ignore', 'ignore', 'pipe'],
-  });
+  // Spawn vite's own entry point, not `npx vite`: on Linux CI (npm 10) `npx`
+  // runs the command through `sh`, so killing npx leaves the real `vite`
+  // process orphaned. That orphan keeps the stderr pipe open, Node keeps the
+  // parent's event loop alive for it, and `npm run check` hangs until the
+  // runner's job timeout (observed on GitHub Actions, 2026-08-29). Running the
+  // bin directly in its own process group lets `stop()` kill the whole group.
+  const viteBin = resolve(repoRoot, 'node_modules/vite/bin/vite.js');
+  const child = spawn(
+    process.execPath,
+    [viteBin, 'preview', '--port', String(PREVIEW_PORT), '--strictPort'],
+    {
+      cwd: repoRoot,
+      stdio: ['ignore', 'ignore', 'pipe'],
+      detached: process.platform !== 'win32',
+    },
+  );
 
   let stderr = '';
   child.stderr.setEncoding('utf8');
@@ -107,15 +119,40 @@ export async function ensurePreview(explicitUrl) {
   });
 
   const url = `http://localhost:${PREVIEW_PORT}${basePath()}`;
+
+  /** Signal the whole preview process group (falls back to the child alone). */
+  const signal = (sig) => {
+    if (exit !== null) return;
+    try {
+      if (process.platform !== 'win32') process.kill(-child.pid, sig);
+      else child.kill(sig);
+    } catch {
+      try {
+        child.kill(sig);
+      } catch {
+        // already gone
+      }
+    }
+  };
+
   let stopped = false;
   const stop = async () => {
     if (stopped) return;
     stopped = true;
-    child.kill('SIGTERM');
+    signal('SIGTERM');
+    // Give vite a moment to exit cleanly, then make sure nothing survives and
+    // nothing keeps this process's event loop alive.
+    const deadline = Date.now() + 3000;
+    while (exit === null && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    if (exit === null) signal('SIGKILL');
+    child.stderr.destroy();
+    child.unref();
   };
-  process.on('exit', () => child.kill('SIGTERM'));
+  process.on('exit', () => signal('SIGTERM'));
   process.on('SIGINT', () => {
-    child.kill('SIGTERM');
+    signal('SIGTERM');
     process.exit(130);
   });
 

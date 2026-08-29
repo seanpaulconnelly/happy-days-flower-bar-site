@@ -53,3 +53,4 @@ if (total > 0) {
   process.exit(1);
 }
 console.log('\nOK: zero axe violations.');
+process.exit(0);

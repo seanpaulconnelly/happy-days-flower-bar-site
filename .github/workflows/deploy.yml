@@ -20,6 +20,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # A healthy build+check is ~2 minutes; anything longer is a hang, not work.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
