@@ -25,14 +25,26 @@ export default function Footer() {
   return (
     <footer className="border-t border-line bg-surface py-section-sm">
       <Container>
+        {/* The name and the place/service-area line are one identity block, so
+            the links can never split them on mobile (ux-spec §4.10, design
+            review 5a-06). At `md` the links centre against the two-line block. */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <Wordmark variant="footer" />
+          <div>
+            <Wordmark variant="footer" />
+            <p className="mt-4 flex flex-col text-small text-ink-muted md:flex-row md:items-center md:gap-2">
+              <span>{place}</span>
+              <span aria-hidden="true" className="hidden md:inline">
+                ·
+              </span>
+              <span>{serviceArea}</span>
+            </p>
+          </div>
           <ul className="flex flex-wrap items-center gap-x-6">
             {links.map((link) => (
               <li key={link.label} className="flex">
                 <a
                   href={link.href}
-                  className="flex min-h-tap items-center font-body text-small font-medium text-ink underline-offset-4 hover:text-brand-ink hover:underline"
+                  className="flex min-h-tap items-center font-body text-small font-medium text-ink underline-offset-4 hover:text-brand-ink hover:underline focus-visible:underline"
                 >
                   {link.label}
                 </a>
@@ -41,15 +53,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        <p className="mt-4 flex flex-col text-small text-ink-muted md:flex-row md:items-center md:gap-2">
-          <span>{place}</span>
-          <span aria-hidden="true" className="hidden md:inline">
-            ·
-          </span>
-          <span>{serviceArea}</span>
-        </p>
-
-        <div className="mt-8 flex flex-col gap-2 border-t border-line pt-6 text-small text-ink-muted md:flex-row md:items-center md:justify-between">
+        <div className="mt-8 flex flex-col gap-3 border-t border-line pt-6 text-small text-ink-muted md:flex-row md:items-center md:justify-between">
           <p>{footer.tagline}</p>
           <p>{COPYRIGHT}</p>
         </div>

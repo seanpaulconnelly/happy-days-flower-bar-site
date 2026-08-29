@@ -57,14 +57,19 @@ export default function Header() {
       <div className="mx-auto flex h-full max-w-site items-center justify-between gap-2 px-gutter sm:gap-6">
         <Wordmark variant="header" href="#top" />
         <nav aria-label="Primary">
-          {/* gap-2 below sm is what keeps the row on one line at 320 px:
-              20 px gutter + 85 lockup + 8 + 181 nav + 20 = 314 ≤ 320. */}
-          <ul className="flex items-center gap-2 sm:gap-5 md:gap-8">
+          {/* gap-2 is only for the narrowest phones: at 320 px the row already
+              spends part of its right gutter (measured 20 + 85 lockup + 8 +
+              196 nav = 309, leaving 11 px of the 20 px gutter) and anything
+              wider wraps. From 360 px there is real slack — 21 + 85 + 12 + 212
+              + 21 = 351 ≤ 360 — so the nav opens up to 16 px gaps rather than
+              reading as one run-on phrase (design review 5a-04). See requests
+              Q8 for the 320 px gutter. */}
+          <ul className="flex items-center gap-2 min-[360px]:gap-4 sm:gap-5 md:gap-8">
             {[flowerBar, about].map((item) => (
               <li key={item.href} className="flex">
                 <a
                   href={item.href}
-                  className="flex min-h-tap items-center whitespace-nowrap font-body text-[0.8125rem] font-medium text-ink underline-offset-4 hover:text-brand-ink hover:underline md:text-small"
+                  className="flex min-h-tap items-center whitespace-nowrap font-body text-[0.8125rem] font-medium text-ink underline-offset-4 hover:text-brand-ink hover:underline focus-visible:underline md:text-small"
                 >
                   {item.label}
                 </a>

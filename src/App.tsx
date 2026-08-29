@@ -72,9 +72,12 @@ function Placeholder({
 export default function App() {
   return (
     <>
+      {/* `focus:not-sr-only` resets `padding: 0` and sorts after the base
+          `px-4 py-3`, so the padding has to be re-declared under the same
+          variant or the pill collapses to its text box on focus (5a-03). */}
       <a
         href="#main"
-        className="sr-only rounded-field bg-brand px-4 py-3 font-medium text-on-brand focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+        className="sr-only rounded-field bg-brand px-4 py-3 font-medium text-on-brand focus:not-sr-only focus:fixed focus:inline-flex focus:min-h-tap focus:items-center focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-3"
       >
         Skip to content
       </a>

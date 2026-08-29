@@ -87,7 +87,7 @@ const RENDITIONS = [
     slot: 'hero',
     suffix: 'square',
     ratio: 1,
-    focalY: 0.57,
+    focalY: 0.55,
     note: 'hero < md',
   },
   {

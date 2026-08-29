@@ -52,11 +52,13 @@ export default function Wordmark({
 
   if (href) {
     return (
-      <a
-        href={href}
-        className={cn(classes, 'inline-flex min-h-tap shrink-0 flex-col justify-center sm:block')}
-      >
-        {content}
+      <a href={href} className={cn(classes, 'inline-flex min-h-tap shrink-0 items-center')}>
+        {/* The anchor stays a centred flex box at every width; this span carries
+            the block/inline lockup switch, so the two-line lockup below `sm` and
+            the single line above it are both centred on the header's midline
+            (design review 5a-01 — `sm:block` on the anchor left the text at the
+            top of a 44 px box). */}
+        <span>{content}</span>
       </a>
     );
   }

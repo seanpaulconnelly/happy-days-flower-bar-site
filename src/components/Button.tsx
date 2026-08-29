@@ -12,8 +12,9 @@ import { cn } from '../lib/cn';
  * ancestor selector so the variant is visible at the call site.
  *
  * `size="header"` is the compact header pill below `md` (36 px tall, hit area
- * padded back out to 44 px with a `::before` overlay) that grows to the normal
- * size from `md` up.
+ * padded back out to 44 px with a `::before` overlay). From `md` it grows to a
+ * 44 px pill with a 14 px label — deliberately the quieter twin of the hero CTA,
+ * which is the only full-size primary on the first screen (design review 5a-05).
  */
 type Variant = 'primary' | 'secondary';
 type Size = 'default' | 'header';
@@ -24,7 +25,7 @@ const BASE =
 const SIZES: Record<Size, string> = {
   default: 'text-[0.9375rem] md:text-base px-6 py-3.5 min-h-tap',
   header:
-    "relative min-h-9 px-3.5 py-2.5 text-[0.8125rem] before:absolute before:inset-x-0 before:-inset-y-1 before:content-[''] md:min-h-tap md:px-6 md:py-3.5 md:text-base md:before:hidden",
+    "relative min-h-9 px-3.5 py-2.5 text-[0.8125rem] before:absolute before:inset-x-0 before:-inset-y-1 before:content-[''] md:min-h-tap md:px-5 md:py-3 md:text-small md:before:hidden",
 };
 
 const VARIANTS: Record<Variant, { light: string; brand: string }> = {

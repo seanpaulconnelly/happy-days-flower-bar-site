@@ -68,7 +68,7 @@ export function preloadLinkFor(
  * a mismatch makes the browser download the hero twice.
  */
 export const SIZES = {
-  hero: '(min-width: 768px) 52vw, 100vw',
+  hero: '(min-width: 768px) 50vw, 100vw',
   intro: '(min-width: 768px) 46vw, 100vw',
   about: '(min-width: 768px) 46vw, 100vw',
   why: '(min-width: 1024px) 22rem, 30vw',

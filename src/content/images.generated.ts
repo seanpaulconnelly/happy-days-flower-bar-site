@@ -93,7 +93,7 @@ export const generatedImages: Record<RenditionId, GeneratedImage> = {
     },
     width: 1152,
     height: 1152,
-    top: 300,
+    top: 269,
     placeholder: '#c8b8a8',
   },
   flowerBarCloseupIntro: {

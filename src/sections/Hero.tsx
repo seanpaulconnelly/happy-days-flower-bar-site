@@ -29,7 +29,11 @@ import { HERO_DESKTOP_MEDIA, SIZES } from '../lib/images';
 export default function Hero() {
   return (
     <section id="top" aria-labelledby="hero-heading" className="relative bg-surface">
-      <Container className="pt-10 pb-section md:pt-16">
+      {/* `md:min-h-[min(50vw,48rem)]` grows the section — the pinned image's
+          containing block — so the band is at least square from 1024 up
+          (design review 5a-02); the symmetric `md:py-16` lets `justify-center`
+          centre the text on the image's true midline. */}
+      <Container className="pt-10 pb-section md:flex md:min-h-[min(50vw,48rem)] md:flex-col md:justify-center md:py-16">
         <div className="max-w-[30rem] md:w-[45%]">
           <p className="animate-rise font-body text-eyebrow text-brand uppercase">{hero.eyebrow}</p>
           <h1
@@ -50,7 +54,7 @@ export default function Hero() {
 
         {/* Below `md` the image sits in the flow under the CTA; from `md` the
             same element is pinned to the section's right edge. */}
-        <div className="animate-fade mt-10 md:absolute md:inset-y-0 md:right-0 md:mt-0 md:w-[52%]">
+        <div className="animate-fade mt-10 md:absolute md:inset-y-0 md:right-0 md:mt-0 md:w-1/2">
           <Picture
             image={generatedImages.heroSquare}
             media={[{ image: generatedImages.hero, media: HERO_DESKTOP_MEDIA }]}
