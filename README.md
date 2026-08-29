@@ -1,13 +1,11 @@
-# Happy Days Flower Farm — website
+# happy-days-flower-bar-site
 
 [![Deploy to GitHub Pages](https://github.com/seanpaulconnelly/happy-days-flower-bar-site/actions/workflows/deploy.yml/badge.svg)](https://github.com/seanpaulconnelly/happy-days-flower-bar-site/actions/workflows/deploy.yml)
 
-The marketing site for Happy Days Flower Farm — a single-page site for the farm's
-pop-up flower bar, a turnkey floral experience brought to businesses, events and
-gatherings in Greensburg, Pittsburgh and throughout Western Pennsylvania. One page,
-one conversion: the inquiry form. Everything visible on the page is approved copy
-transcribed verbatim from the owner's brief; nothing here paraphrases or invents
-business facts.
+Source for a single-page static website with one inquiry form, deployed to GitHub
+Pages. This README covers the engineering only; the site itself is the place for
+what the business does. All visible copy is owner-approved text held in one file and
+checked verbatim at build time.
 
 ## Stack
 
@@ -29,10 +27,9 @@ script, so nothing is transformed at request time.
 | `npm run qa:form` | Drive the inquiry form against the local mock backend in every mode and screenshot each state into `docs/qa/screenshots/form/`.                                                                       |
 | mock backend      | `node scripts/mock-inquiry-server.mjs --mode ok`, then `VITE_INQUIRY_ENDPOINT=http://localhost:8787 npm run dev` — the form, live, with no deployed backend ([recipe](#working-on-the-form-locally)). |
 
-Run `npm run check` before every commit and `npm run qa` before a release. Until the
-inquiry endpoint is filled in, use `npm run check -- --allow-todos`, which downgrades
-unresolved `TODO_` placeholders in `src/config/site.ts` to a warning (this is also
-what CI runs).
+Run `npm run check` before every commit and `npm run qa` before a release. If a
+`TODO_` placeholder is ever reintroduced in `src/config/site.ts`, `npm run check --
+--allow-todos` downgrades it to a warning; CI runs the strict form.
 
 `npm run qa` and the copy check drive a headless Chromium via Playwright; if it is
 missing locally, run `npx playwright install chromium` once.
@@ -40,7 +37,7 @@ missing locally, run `npx playwright install chromium` once.
 ## How deploys work
 
 Push to `main` → the [`deploy.yml`](.github/workflows/deploy.yml) workflow runs
-`npm ci`, `npm run check -- --allow-todos` and uploads `dist/` → GitHub Pages
+`npm ci`, `npm run check` and uploads `dist/` → GitHub Pages
 publishes it. There is no manual deploy step and no other environment. The workflow
 also enables Pages on its first run and picks the correct Vite `base` automatically:
 the repository sub-path while the site lives on `github.io`, or `/` once
@@ -61,8 +58,7 @@ reverting the commit and pushing — the same pipeline redeploys.
 ## Inquiry form
 
 Submissions post to a Google Apps Script web app whose only capability is appending a
-row to a Google Sheet the business owns — it holds a single OAuth scope and sends no
-email. The endpoint's contract ends there: the Sheet is the record of truth, and being
+row to a Google Sheet — it holds a single OAuth scope and sends no email. The endpoint's contract ends there: the Sheet is the record of truth, and being
 told that a row has landed is out of scope for the site (D20), handled by a separate
 workflow outside this repo. Web3Forms is a documented fallback and `mailto:` is the
 always-available escape hatch. No secrets live in this repository — see
