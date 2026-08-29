@@ -1,6 +1,6 @@
 # Search setup — post-launch checklist
 
-Written for **Sean** (technical). Steps that need **Bethany** (the business
+Written for **Sean** (technical). Steps that need **the owner** (the business
 owner, or her Google account) are marked. Nothing here can be automated by an
 agent: every step is a browser or DNS action.
 
@@ -9,9 +9,9 @@ Run this **after** Phase 9 (domain cutover) is complete — i.e. after
 verifying and submitting a URL that redirects, which wastes a crawl budget you
 do not have and can get the wrong host cached.
 
-Total time: ~30 minutes for §1–§3, plus ~20 minutes with Bethany for §4.
+Total time: ~30 minutes for §1–§3, plus ~20 minutes with the owner for §4.
 
-Legend: 🔧 Sean · 🌸 Bethany · 🤝 both, one sitting
+Legend: 🔧 Sean · 🌸 Owner · 🤝 both, one sitting
 
 ---
 
@@ -19,7 +19,7 @@ Legend: 🔧 Sean · 🌸 Bethany · 🤝 both, one sitting
 
 | Need                                      | Where it is                                                   |
 | ----------------------------------------- | ------------------------------------------------------------- |
-| The Happy Days Google account             | 🌸 Bethany — `…@happydaysflowers.com`. **Use this account for everything below**, never a personal one. (Plan §8 Q22.) |
+| The Happy Days Google account             | 🌸 Owner — `…@happydaysflowers.com`. **Use this account for everything below**, never a personal one. (Plan §8 Q22.) |
 | DNSimple access                           | 🔧 Sean — same session as the Pages DNS records                |
 | Canonical URL                             | `https://happydaysflowers.com/`                               |
 | Sitemap URL                               | `https://happydaysflowers.com/sitemap.xml`                    |
@@ -32,7 +32,7 @@ Legend: 🔧 Sean · 🌸 Bethany · 🤝 both, one sitting
 
 **Do not publish** anywhere in this process: a phone number, a street address,
 retail opening hours, or deposit/payment terms. None is approved for V1
-(`answers-from-bethany.md` §3c). §4.3 explains the one place Google will ask for
+(`owner-answers.md` §3c). §4.3 explains the one place Google will ask for
 an address anyway and what to do about it.
 
 ---
@@ -103,7 +103,7 @@ account, ownership has to be migrated later — do it right the first time.
 6. In URL Inspection, open **View crawled page → Screenshot / HTML**. Confirm
    Google's *rendered* HTML shows the real page content, not an empty
    `<div id="root">`. This is the check that catches a broken client-render.
-7. **Settings → Users and permissions:** 🌸 Bethany is the verified owner;
+7. **Settings → Users and permissions:** 🌸 Owner is the verified owner;
    add Sean as a **Full** user so he can debug without holding ownership.
 
 Nothing else in Search Console needs configuring. Ignore the Enhancements
@@ -130,12 +130,12 @@ Five minutes, and it feeds Bing, DuckDuckGo and Microsoft Copilot.
 the Business Profile drives more discovery than the website does, and it is the
 main input to Google's local pack and to "near me" answers in AI Overviews.
 
-Decision already made (Bethany, `answers-from-bethany.md` §3c): **Option B —
+Decision already made (the owner, `owner-answers.md` §3c): **Option B —
 service-area business with the home address hidden.** The profile basics exist
 but are not published yet.
 
 Sign in as **the Happy Days Google account** at
-https://business.google.com. 🌸 Bethany drives; 🔧 Sean sits with her.
+https://business.google.com. 🌸 Owner drives; 🔧 Sean sits with her.
 
 ### 4.1 Identity
 
@@ -171,21 +171,21 @@ unavoidable and it is *not* the same as publishing it:
 **Service area:** add `Greensburg, PA`, `Pittsburgh, PA`, and `Westmoreland
 County, PA` / `Allegheny County, PA`. Google's service-area picker takes cities,
 counties or ZIPs, not a radius; these approximate the "≈ 50 miles / one hour
-from Greensburg" area from `answers-from-bethany.md` §3d and match the
+from Greensburg" area from `owner-answers.md` §3d and match the
 `GeoCircle` in the site's structured data. Do not list twenty towns — a small
 number of accurate areas outperforms a padded list.
 
 **Hours:** set **"By appointment"** (or "Open with no main hours" if that is the
 only option offered). Do not enter retail hours — §3c is explicit.
 
-**Phone:** 🌸 **Bethany's decision, not ours.** No phone is published on the
+**Phone:** 🌸 **the owner's decision, not ours.** No phone is published on the
 website by decision. A GBP phone number is optional; it does help calls and is a
 mild ranking signal, and a GBP number is *not* the same as putting one on the
 site. If she does not want one, leave it blank — the profile works with a
 website only.
 
 **Verification:** service-area businesses are usually verified by **video** now
-(a short recording showing the business, equipment and the owner). 🌸 Bethany's
+(a short recording showing the business, equipment and the owner). 🌸 Owner's
 job. Budget a few days for review; nothing else on this list blocks on it, but
 the profile stays unpublished until it clears.
 
@@ -313,7 +313,7 @@ Could not be run before launch — both tools need a public URL.
 | +3 days           | Search Console: is the URL indexed? (`URL Inspection` → "URL is on Google"). Sitemap read successfully.                     |
 | +2 weeks          | GBP verification cleared and the profile is live; address confirmed hidden in an incognito window.                          |
 | +30 days          | Search Console Performance: which queries produce impressions. Expect brand terms plus "flower bar" variants first.         |
-| +90 days          | The real read. If "Pittsburgh"-modified queries show impressions but positions 15+, that is the trigger for the V2 `/pittsburgh` service page (`docs/seo-aeo-spec.md` §13, A5) — which needs new copy from Bethany. Also the point to revisit the `<title>` experiment (A2). |
+| +90 days          | The real read. If "Pittsburgh"-modified queries show impressions but positions 15+, that is the trigger for the V2 `/pittsburgh` service page (`docs/seo-aeo-spec.md` §13, A5) — which needs new copy from the owner. Also the point to revisit the `<title>` experiment (A2). |
 | When copy changes | Bump `<lastmod>` in `public/sitemap.xml` and re-check `public/llms.txt` against `src/content/copy.ts`.                      |
 
 ---

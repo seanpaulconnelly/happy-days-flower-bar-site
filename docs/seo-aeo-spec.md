@@ -24,9 +24,9 @@ none exists in an approved source.
 | Canonical URL                     | `https://happydaysflowers.com/` — apex, `www` redirects to apex              | Plan §8 Q6                                     |
 | Preview host                      | `https://seanpaulconnelly.github.io/happy-days-flower-bar-site/` — `noindex` | Plan §8 Q14, decision D5                       |
 | AI crawlers in `robots.txt`       | **Allowed**, all of them                                                     | Plan §8 Q19                                    |
-| Package prices in structured data | **Yes**, as `Offer`s                                                         | Bethany §3b; plan §8 Q20                       |
-| Business model in markup          | Service-area business; locality + region only, **no** street address         | Bethany §3c (GBP Option B)                     |
-| Phone / hours                     | Not published anywhere, on the site or in markup                             | Bethany §3c                                    |
+| Package prices in structured data | **Yes**, as `Offer`s                                                         | Owner answers §3b; plan §8 Q20                       |
+| Business model in markup          | Service-area business; locality + region only, **no** street address         | Owner answers §3c (GBP Option B)                     |
+| Phone / hours                     | Not published anywhere, on the site or in markup                             | Owner answers §3c                                    |
 | FAQ in V1                         | Yes, 8 approved Q&As, `FAQPage` JSON-LD                                      | Plan §8 Q18                                    |
 | FAQ placement                     | Position 8, between About and Inquiry (`#faq`)                               | `docs/ux-spec.md` §1.1                         |
 | FAQ interaction                   | Native `<details>`/`<summary>`, all answers in the DOM at first render       | `docs/ux-spec.md` §1.2                         |
@@ -50,7 +50,7 @@ Fetched 2026-08-29 from the four reference URLs in `1-genesis/…/websites.md`:
 | ------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Roots to Petals (Oakmont, PA)         | **Our market**  | "Event Flowers & Flower Bar Services \| Roots to Petals"; H1 "Premier Pittsburgh Florist & Plant Shop" | "Packages begin at $400"         | No         | The only Pittsburgh-area result and it is a **retail florist** with a flower bar as one line item. Nobody local owns "pop-up flower bar" as an entity. That is the opening.                                |
 | Flair Flower Bar (Cincinnati / N. KY) | Direct analogue | "FLAIR Flower Bar Rental \| Private & Corporate Events in Cincinnati, OH & Northern KY"                | 4 tiers, $465–$1,050 + per-guest | No         | Service + geo in the title, and an explicit city/ZIP list on the page. Their guest-tier structure is the same as ours.                                                                                     |
-| Garden Muses (DC / DMV)               | Direct analogue | "Pop Up Floral Bar for Corporate Events & Private Gatherings in Washington, DC"                        | Per-person tiers                 | **7 Q&As** | Their FAQ is ~6/8 the same questions Bethany answered independently. Strong confirmation these are the real buyer questions. Their FAQ sits _after_ the form; ours sits before it (ux-spec §1.1) — better. |
+| Garden Muses (DC / DMV)               | Direct analogue | "Pop Up Floral Bar for Corporate Events & Private Gatherings in Washington, DC"                        | Per-person tiers                 | **7 Q&As** | Their FAQ is ~6/8 the same questions the owner answered independently. Strong confirmation these are the real buyer questions. Their FAQ sits _after_ the form; ours sits before it (ux-spec §1.1) — better. |
 | Blossom Flower Bar (Cleveland)        | Brand reference | Retail-led, multi-location                                                                             | No                               | No         | Taste reference only; not a competitor for our query set.                                                                                                                                                  |
 
 Two of the three flower-bar specialists publish prices and put the service plus
@@ -313,7 +313,7 @@ the same `copy.faq.items` array the `<details>` elements render. Never a second
 transcription. Google's FAQ policy still requires the markup to match visible
 page content, and a divergence would be both a policy problem and a copy-drift
 problem. The validation run asserts byte-identity against
-`answers-from-bethany.md` (§10, block 1).
+`owner-answers.md` (§10, block 1).
 
 Note on value: FAQ **rich results** stopped appearing in Google Search on
 2026-05-07 and Search Console reporting is being retired through mid-2026. The
@@ -431,7 +431,7 @@ it is where `lastmod` lives. Keep it.
 A plain-Markdown summary at `/llms.txt`: what the business is, where it is, the
 service, the four packages with prices, the service area, all eight Q&As, the
 "Why Happy Days" points, and how to make contact. **Every sentence is verbatim
-approved copy** from `website-spec.md` or `answers-from-bethany.md`, plus the
+approved copy** from `website-spec.md` or `owner-answers.md`, plus the
 decided facts (canonical URL, email, socials). It ends by stating what is _not_
 available — no phone, no address, no hours, no online booking — because a
 "no phone number listed" statement prevents an assistant from confidently
@@ -557,7 +557,7 @@ two images). Script was throwaway and is not in the repo.
   `exposePricesInStructuredData: false`: zero prices and no `priceRange`.
 - **FAQ** — 8 `Question`s, every one with a non-empty `name` and
   `acceptedAnswer.text`; order is the §11.1 order; and the answer strings are
-  **byte-identical** to `answers-from-bethany.md`.
+  **byte-identical** to `owner-answers.md`.
 - **Preview mode** — every `@id` uses the GitHub Pages host.
 - **Serialisation safety** — a hostile string containing `</script>` and `<!--`
   round-trips through `JSON.parse` with no raw `</script` or `<!--` in the output.
@@ -666,10 +666,10 @@ overrides it. Two search-specific points:
 
 **Filenames.** The nine source filenames are already descriptive and keyword-honest
 (`hero-flower-bar`, `flower-bar-closeup`, `farm-bouquet-pink-white`,
-`farm-zinnias`, `gallery-event-detail`, `about-bethany-working`, …). Keep them —
+`farm-zinnias`, `gallery-event-detail`, `about-still-life`, …). Keep them —
 lowercase, hyphenated, no stuffing. Two notes:
 
-- `about-bethany-working.*` names a private individual, and per request Q6 in
+- `about-still-life.*` names a private individual, and per request Q6 in
   `docs/qa/requests.md` the photo contains **no person at all** — it is a
   delphinium still life. So the filename is both a small R10 exposure on a
   publicly served file and simply inaccurate. Prefer renaming the optimised
@@ -704,11 +704,11 @@ Nothing in this list has been implemented. All of it is optional.
 
 | #   | Item                                                                                              | Who approves       | Recommendation                                                                                                                                                                     |
 | --- | ------------------------------------------------------------------------------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A1  | FAQ section heading. Neither source supplies one. Proposed: **"Frequently Asked Questions"**.     | Bethany (via Sean) | **Ship it.** Plain, entity-clear, universally understood. "Flower Bar FAQ" is a reasonable alternative; "Good to Know" and similar are worse for search because they name nothing. |
+| A1  | FAQ section heading. Neither source supplies one. Proposed: **"Frequently Asked Questions"**.     | Owner (via Sean) | **Ship it.** Plain, entity-clear, universally understood. "Flower Bar FAQ" is a reasonable alternative; "Good to Know" and similar are worse for search because they name nothing. |
 | A2  | Alternative `<title>`: `Pop-Up Flower Bars in Pittsburgh & Western PA \| Happy Days Flower Farm`. | Sean               | **Not for launch.** Ship the approved title; revisit as a measured experiment ~90 days after launch (§3).                                                                          |
-| A3  | Adding "Pittsburgh" to a visible heading or the hero paragraph.                                   | Bethany            | **No.** The copy is approved and reads well. §2.4 lever 2 gets most of the benefit for free.                                                                                       |
-| A4  | Renaming the optimised output of `about-bethany-working.*` (§12).                                 | Sean / engineer    | Minor; do it if it is free.                                                                                                                                                        |
-| A5  | A dedicated `/pittsburgh` service page.                                                           | Sean               | **V2, not now.** Only if Search Console shows Pittsburgh impressions with weak position after ~90 days. It would need new copy from Bethany.                                       |
+| A3  | Adding "Pittsburgh" to a visible heading or the hero paragraph.                                   | Owner            | **No.** The copy is approved and reads well. §2.4 lever 2 gets most of the benefit for free.                                                                                       |
+| A4  | Renaming the optimised output of `about-still-life.*` (§12).                                 | Sean / engineer    | Minor; do it if it is free.                                                                                                                                                        |
+| A5  | A dedicated `/pittsburgh` service page.                                                           | Sean               | **V2, not now.** Only if Search Console shows Pittsburgh impressions with weak position after ~90 days. It would need new copy from the owner.                                       |
 
 ---
 

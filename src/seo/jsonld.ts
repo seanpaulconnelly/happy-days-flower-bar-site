@@ -27,7 +27,7 @@ export interface JsonLdGraph {
  * Municipal centroid of Greensburg, Pennsylvania (40°17′52″N 79°32′32″W,
  * Wikipedia, verified 2026-08-29). This is the published city centre, NOT the
  * owner's address — the business is a service-area business with the address
- * deliberately hidden (Bethany, 2026-08-29, GBP Option B).
+ * deliberately hidden (owner, 2026-08-29, GBP Option B).
  */
 export const GREENSBURG_GEO = { latitude: 40.2978, longitude: -79.5422 } as const;
 

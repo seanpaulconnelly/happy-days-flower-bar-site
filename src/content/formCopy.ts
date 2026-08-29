@@ -3,7 +3,7 @@
  *
  * This is deliberately NOT in `copy.ts`. Everything in `copy.ts` is the
  * business owner's approved wording, transcribed from `website-spec.md` and
- * `answers-from-bethany.md`, and changing it needs her approval. The strings
+ * `owner-answers.md`, and changing it needs the owner's approval. The strings
  * below are interface text written by the UX spec (validation messages, state
  * headings, the "Choose one" option) and are owned by the spec, not the owner.
  * They are still not typed inline in JSX, for the same reason: one place to

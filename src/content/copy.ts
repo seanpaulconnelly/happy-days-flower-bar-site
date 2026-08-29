@@ -1,7 +1,7 @@
 /**
  * ALL page copy, transcribed verbatim from the two approved sources:
  *   - 1-genesis/.../Happy_Days_Website_Developer_Handoff/website-spec.md
- *   - 1-genesis/.../questions/answers-from-bethany.md  (FAQ, event types, auto-reply)
+ *   - 1-genesis/.../questions/owner-answers.md  (FAQ, event types, auto-reply)
  *
  * Rules:
  *   - Never paraphrase, never invent. If copy is missing, stop and ask.
@@ -95,7 +95,7 @@ export const packages = {
         'Perfect for corporate events, client appreciation, open houses and larger gatherings.',
       // "This is the recommended package to emphasize visually. A small 'Most
       // Popular' treatment is appropriate." — website-spec.md, re-confirmed in
-      // answers-from-bethany.md §5.
+      // owner-answers.md §5.
       mostPopular: true,
     },
     {
@@ -164,10 +164,10 @@ export const about = {
 
 export const faq = {
   // NOT FROM SOURCE: neither source supplies a heading for the FAQ section
-  // (the section itself was approved in answers-from-bethany.md §3a). This is a
+  // (the section itself was approved in owner-answers.md §3a). This is a
   // placeholder for the owner to confirm — flagged in the Phase 3 handoff.
   heading: 'Frequently Asked Questions',
-  // Verbatim from answers-from-bethany.md §3a, in SEO display order — see
+  // Verbatim from owner-answers.md §3a, in SEO display order — see
   // docs/seo-aeo-spec.md §11.1 (source indices 1, 4, 3, 2, 5, 7, 8, 6; request
   // SEO-3). Not one word changed: display order only. This array IS the order
   // of the <details> rows AND of FAQPage.mainEntity, which is what makes a
@@ -218,7 +218,7 @@ export const faq = {
 } as const;
 
 /**
- * Type of Event options, verbatim from answers-from-bethany.md §2a, in order.
+ * Type of Event options, verbatim from owner-answers.md §2a, in order.
  * The eighth source line reads "Other (with a box to type in)"; the
  * parenthetical is an instruction to add a free-text box, not option text, so
  * the option label is "Other" and the form reveals a text input when it is

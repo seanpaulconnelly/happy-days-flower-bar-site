@@ -90,7 +90,7 @@ export interface SeoPackage {
   readonly maxGuests?: number;
 }
 
-/** One approved FAQ entry. Verbatim from `answers-from-bethany.md`. */
+/** One approved FAQ entry. Verbatim from `owner-answers.md`. */
 export interface SeoFaq {
   readonly question: string;
   readonly answer: string;
