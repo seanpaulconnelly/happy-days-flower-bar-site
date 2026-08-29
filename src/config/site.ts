@@ -24,7 +24,7 @@ export const site = {
       'https://script.google.com/macros/s/AKfycbzTyej_l9ni37wuGxnc5G9YzTgeFWhTIaT5Tfw-SYE3OZQr_BycrdeF_6hM50NEJ9ZQ/exec', // Apps Script web app URL (public by design); or the Web3Forms access key
     minElapsedMs: 3000,
   },
-  analytics: { ga4MeasurementId: '' }, // empty = loader inert
+  analytics: { ga4MeasurementId: 'G-0Q10S0HGSZ' }, // empty = loader inert; loads only on the canonical host
   serviceArea: {
     center: 'Greensburg, PA',
     radiusMiles: 50,

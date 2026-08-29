@@ -46,10 +46,14 @@ export function initAnalytics(): void {
   started = true;
 
   window.dataLayer = window.dataLayer ?? [];
-  const gtag: (...args: unknown[]) => void = (...args) => {
-    window.dataLayer?.push(args);
-  };
-  window.gtag = gtag;
+  // Must push the `arguments` object itself, exactly like Google's snippet:
+  // gtag.js ignores plain arrays on the dataLayer, so an arrow function with a
+  // rest parameter would make `config` a silent no-op.
+  function gtag(this: unknown): void {
+    // eslint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments);
+  }
+  window.gtag = gtag as (...args: unknown[]) => void;
 
   const script = document.createElement('script');
   script.async = true;
