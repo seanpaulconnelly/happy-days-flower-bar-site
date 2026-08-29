@@ -20,20 +20,21 @@ Run every command from the repository root.
 
 > Maintained by the orchestrator — update the Status column as each step lands.
 
-| #   | Step                                                     | Owner           | Status               |
-| --- | -------------------------------------------------------- | --------------- | -------------------- |
-| 1   | Repo scaffolded, site built, QA gates green              | agent           | see the build report |
-| 2   | `deploy.yml` workflow committed                          | agent           | done                 |
-| 3   | Phase 8 — first push to `main`, Pages deploy (§1)        | agent           | pending              |
-| 4   | Pages source click, **only if** auto-enable fails (§1.4) | 🧑 Sean         | pending (B3)         |
-| 5   | Live-URL verification + `live` screenshots (§1.5)        | agent           | pending              |
-| 6   | Phase 9 — `public/CNAME` + canonical commit (§2.1)       | agent           | pending              |
-| 7   | DNSimple records + verification TXT (§2.2, §2.3)         | 🧑 Sean         | pending (B4)         |
-| 8   | GitHub custom domain + Enforce HTTPS (§2.4)              | 🧑 Sean         | pending (B4)         |
-| 9   | `happydaysflowerfarm.com` URL forwarding (§2.5)          | 🧑 Sean         | pending (B4)         |
-| 10  | Post-cutover verification (§2.6)                         | agent           | pending              |
-| 11  | Apps Script `/exec` URL into `site.ts` (§4)              | 🧑 Sean → agent | pending (B1)         |
-| 12  | GA4 Measurement ID into `site.ts` (§5)                   | 🧑 Sean → agent | pending (B2)         |
+| #   | Step                                                         | Owner           | Status                                                                                                                                                                                                                      |
+| --- | ------------------------------------------------------------ | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Repo scaffolded, site built, QA gates green                  | agent           | see the build report                                                                                                                                                                                                        |
+| 2   | `deploy.yml` workflow committed                              | agent           | done                                                                                                                                                                                                                        |
+| 3   | Phase 8 — first push to `main` (§1.2)                        | agent           | **done** 2026-08-29 17:20 UTC — `* [new branch] main -> main`                                                                                                                                                               |
+| 3b  | Phase 8 — first Pages deploy run (§1.3)                      | agent           | **failed** — [run 33265382781](https://github.com/seanpaulconnelly/happy-days-flower-bar-site/actions/runs/33265382781) — `actions/configure-pages@v6` (step 6) failed; steps 7–9 and the `deploy` job skipped. This is B3. |
+| 4   | Pages source click, **only if** auto-enable fails (§1.4)     | 🧑 Sean         | **OPEN — blocking (B3)**. Do the click path in §1.4, then re-run the failed run.                                                                                                                                            |
+| 5   | Live-URL verification + `live` screenshots (§1.5)            | agent           | blocked on row 4                                                                                                                                                                                                            |
+| 6   | Phase 9 (b) — `public/CNAME` commit (§2.1) — **after row 7** | agent           | pending                                                                                                                                                                                                                     |
+| 7   | DNSimple records + verification TXT (§2.2, §2.3)             | 🧑 Sean         | pending (B4)                                                                                                                                                                                                                |
+| 8   | GitHub custom domain + Enforce HTTPS (§2.4)                  | 🧑 Sean         | pending (B4)                                                                                                                                                                                                                |
+| 9   | `happydaysflowerfarm.com` URL forwarding (§2.5)              | 🧑 Sean         | pending (B4)                                                                                                                                                                                                                |
+| 10  | Post-cutover verification (§2.6)                             | agent           | pending                                                                                                                                                                                                                     |
+| 11  | Apps Script `/exec` URL into `site.ts` (§4)                  | 🧑 Sean → agent | pending (B1)                                                                                                                                                                                                                |
+| 12  | GA4 Measurement ID into `site.ts` (§5)                       | 🧑 Sean → agent | pending (B2)                                                                                                                                                                                                                |
 
 Blocker IDs (B1–B4) are the rows in
 `3-plans/happy-days-flower-bar-site/BLOCKERS.md` in the wrapper project.
@@ -105,6 +106,38 @@ is the one-time fallback, and it is the only click Phase 8 can need:
 
 Then poll the command above again. Nothing needs re-pushing.
 
+**This is exactly what happened on the first run (2026-08-29 17:20 UTC).**
+Run [33265382781](https://github.com/seanpaulconnelly/happy-days-flower-bar-site/actions/runs/33265382781),
+job `build` — the step list from the public API:
+
+```
+1 Set up job                          success
+2 Run actions/checkout@v7             success
+3 Run actions/setup-node@v7           success
+4 Run npm ci                          success
+5 Install Chromium for the copy check success
+6 Run actions/configure-pages@v6      FAILURE   <-- B3
+7 Resolve base path                   skipped
+8 Run npm run check -- --allow-todos  skipped
+9 Run actions/upload-pages-artifact@v5 skipped
+   (job `deploy`                      skipped)
+```
+
+Corroborating evidence that this is enablement and not a build error: `npm ci`
+and the Chromium install both passed, the build never ran, and
+
+```sh
+curl -s https://api.github.com/repos/seanpaulconnelly/happy-days-flower-bar-site/pages
+```
+
+returns `404 Not Found` — i.e. **no Pages site exists on the repository yet**, so
+`enablement: true` was refused by the workflow token. The step's own log text is
+not readable without a token (`.../actions/jobs/<id>/logs` → `403 Must have admin
+rights to Repository`); open the run URL above in a browser to see it.
+
+Nothing in the repository needs changing. After the click, use **Re-run all
+jobs** on the most recent run.
+
 ### 1.5 Verify
 
 ```sh
@@ -154,22 +187,46 @@ Google from indexing the throwaway host and later competing with
 
 ## 2. Phase 9 — domain cutover to `happydaysflowers.com`
 
-Order of operations matters: **DNS first → then the GitHub custom-domain field →
-then Enforce HTTPS.** Setting the custom domain before the records exist makes
-GitHub's DNS check fail and can leave the field in an error state; ticking
-Enforce HTTPS before the certificate is issued is simply not offered.
+Order of operations matters: **DNS first → then the `public/CNAME` commit → then
+the GitHub custom-domain field → then Enforce HTTPS.** Setting the custom domain
+before the records exist makes GitHub's DNS check fail and can leave the field in
+an error state; ticking Enforce HTTPS before the certificate is issued is simply
+not offered.
 
 Variables used below: `REPO=happy-days-flower-bar-site`,
 `DOMAIN=happydaysflowers.com` (apex is canonical), GitHub user
 `seanpaulconnelly`.
 
-### 2.1 Agent-side commit (do this first, before the DNS work)
+### 2.0 Sequencing — do these four things in this order
+
+The `public/CNAME` commit is not a safe "get ahead of it" step. That one file
+flips the Vite `base` to `/` **and** turns indexing on, so pushing it before DNS
+exists leaves the `github.io` preview serving root-absolute asset URLs that 404,
+with nowhere else for the site to live yet. So:
+
+| Step    | Who     | What                                                                              | Section    |
+| ------- | ------- | --------------------------------------------------------------------------------- | ---------- |
+| **(a)** | 🧑 Sean | Add the DNSimple records (ALIAS/CNAME) **and** the `_github-pages-challenge…` TXT | §2.2, §2.3 |
+| **(b)** | agent   | Commit + push `public/CNAME` — **only after (a)**                                 | §2.1       |
+| **(c)** | 🧑 Sean | _Settings → Pages → Custom domain_ → `happydaysflowers.com` → **Save**            | §2.4       |
+| **(d)** | 🧑 Sean | Wait for the certificate, then tick **Enforce HTTPS**                             | §2.4       |
+
+Between **(b)** and **(c)** — roughly two minutes — the `github.io` URL may 404
+its CSS, JS and images, because the build now points assets at `/` while Pages is
+still serving the site from `/happy-days-flower-bar-site/`. **This is expected**
+and it clears the moment (c) is saved, at which point the `github.io` URL starts
+redirecting to the custom domain.
+
+Sean triggers (b) by telling Claude Code _"the DNS records are in"_, or by running
+the five commands in §2.1 himself.
+
+### 2.1 (b) The `public/CNAME` commit — only after Sean's DNS records exist (§2.2, §2.3)
 
 ```sh
-echo "happydaysflowers.com" > public/CNAME
+echo happydaysflowers.com > public/CNAME
 npm run check -- --allow-todos
 git add public/CNAME
-git commit -m "feat(release): custom domain happydaysflowers.com"
+git commit -m "release: custom domain happydaysflowers.com"
 git push origin main
 ```
 
@@ -180,11 +237,10 @@ One file does three things (D5 + §3.3 of the build plan): the presence of
 already `https://happydaysflowers.com`, so canonical, OG, sitemap and JSON-LD
 URLs need no edit.
 
-Wait for `completed success` with the poll command from §1.4. The `github.io`
-URL will now 404 on assets until the custom domain is live — expected, and it
-starts redirecting to the custom domain once §2.4 is saved.
+Wait for `completed success` with the poll command from §1.4, then go straight to
+(c) in §2.4 — the shorter the gap, the shorter the 404 window described in §2.0.
 
-### 2.2 🧑 Sean — DNSimple records for `happydaysflowers.com`
+### 2.2 (a) 🧑 Sean — DNSimple records for `happydaysflowers.com`
 
 DNSimple → `happydaysflowers.com` → **DNS**.
 
@@ -214,7 +270,7 @@ This creates the ALIAS record on the apex and the `www` CNAME for you.
 (Keep the `www` CNAME either way. Prefer ALIAS over A records: GitHub can change
 those IPs, and the ALIAS follows.)
 
-### 2.3 🧑 Sean — account-level domain verification TXT (do once, keep forever)
+### 2.3 (a) 🧑 Sean — account-level domain verification TXT (do once, keep forever)
 
 This stops anyone else from ever attaching this domain to their own Pages site
 after you detach it.
@@ -239,9 +295,10 @@ minutes. Check it yourself with:
 dig +short TXT _github-pages-challenge-seanpaulconnelly.happydaysflowers.com
 ```
 
-### 2.4 🧑 Sean — GitHub custom domain, then HTTPS
+### 2.4 (c) + (d) 🧑 Sean — GitHub custom domain, then HTTPS
 
-Once §2.2 resolves (check with `dig +short happydaysflowers.com`):
+Once §2.2 resolves (check with `dig +short happydaysflowers.com`) **and the
+§2.1 `public/CNAME` push has gone green**:
 
 > GitHub → the **repository** → **Settings** → **Pages** → **Custom domain** →
 > `happydaysflowers.com` → **Save**.
