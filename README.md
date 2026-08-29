@@ -26,6 +26,7 @@ script, so nothing is transformed at request time.
 | `npm run check`   | The pre-commit gate: typecheck → lint → config check → build → copy check.                                                         |
 | `npm run qa`      | Screenshots, axe accessibility scan and Lighthouse against a local preview. Writes into `docs/qa/`.                                |
 | `npm run images`  | Re-generate `public/images/` (+ `og.jpg`, `apple-touch-icon.png`) and `src/content/images.generated.ts` from `assets-src/images/`. |
+| `npm run qa:form` | Drive the inquiry form against the local mock backend in every mode and screenshot each state into `docs/qa/screenshots/form/`.    |
 
 Run `npm run check` before every commit and `npm run qa` before a release. Until the
 inquiry endpoint is filled in, use `npm run check -- --allow-todos`, which downgrades
@@ -62,6 +63,32 @@ Submissions post to a Google Apps Script web app that writes to a Google Sheet t
 business owns and emails the inquiry inbox; Web3Forms is a documented fallback and
 `mailto:` is the always-available escape hatch. No secrets live in this repository —
 see [`integrations/README.md`](integrations/README.md).
+
+### Working on the form locally
+
+There is no need for a deployed backend. `scripts/mock-inquiry-server.mjs` stands in
+for the Apps Script `/exec` endpoint on `:8787`, and `VITE_INQUIRY_ENDPOINT` points the
+app at it. In two terminals:
+
+```sh
+node scripts/mock-inquiry-server.mjs --mode ok
+VITE_INQUIRY_ENDPOINT=http://localhost:8787 npm run dev
+```
+
+Change `--mode` to drive the state you want to see:
+
+| Mode            | What the backend does                              | What the form shows                                                                                      |
+| --------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ok`            | `{ ok: true }`                                     | Confirmation panel                                                                                       |
+| `quarantine`    | `{ ok: true, quarantined: true }`                  | Confirmation panel — a flagged lead is still saved, and the visitor is never told they looked like a bot |
+| `reject`        | `{ ok: false, reason: 'rejected' }`                | Error panel with the prefilled `mailto:`                                                                 |
+| `error`         | HTTP 500                                           | Error panel with the prefilled `mailto:`                                                                 |
+| `slow`          | 6 s, then `{ ok: true }`                           | "Sending…", button disabled                                                                              |
+| `nonce-blocked` | 500 on the nonce `GET`, `{ ok: true }` on the POST | Confirmation panel — the missing nonce must never cost a lead (fail open)                                |
+
+`npm run qa:form` runs all of that unattended: it builds with the override, walks the
+form in each mode and asserts the outcomes, then rebuilds `dist/` on the committed
+configuration. Screenshots land in `docs/qa/screenshots/form/` (gitignored).
 
 ## More documentation
 

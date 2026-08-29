@@ -17,6 +17,7 @@
     "check:config": "node scripts/check-config.mjs",
     "qa": "npm run qa:screens && npm run qa:a11y && npm run qa:lighthouse",
     "qa:screens": "node scripts/screenshots.mjs",
+    "qa:form": "node scripts/form-states.mjs",
     "qa:a11y": "node scripts/a11y.mjs",
     "qa:lighthouse": "bash scripts/lighthouse.sh"
   },

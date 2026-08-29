@@ -8,16 +8,17 @@ import Gallery from './sections/Gallery';
 import Header from './sections/Header';
 import Hero from './sections/Hero';
 import HowItWorks from './sections/HowItWorks';
+import Inquiry from './sections/Inquiry';
 import Packages from './sections/Packages';
 import WhyHappyDays from './sections/WhyHappyDays';
 
 /**
  * Page shell. Section order and anchor ids are ux-spec §1. Built so far:
  * Header, Hero, Footer (5a), Flower Bar Intro, How It Works, Packages (5b) and
- * Why Happy Days, Gallery, About (5c).
+ * Why Happy Days, Gallery, About (5c) and the Inquiry form (5d).
  * The sections still to come render their approved H2 inside a `<Placeholder>`
  * so the anchors, the heading outline and the `aria-labelledby` wiring are real
- * from the first batch; batches 5d–5e replace each placeholder in place.
+ * from the first batch; batch 5e replaces the last one (the FAQ) in place.
  *
  * React renders no document metadata and no `ld+json`: the head is injected at
  * build time by the `happy-days-seo-head` plugin in `vite.config.ts` (SEO-1).
@@ -93,7 +94,7 @@ export default function App() {
         <Gallery />
         <About />
         <Placeholder id="faq" heading={copy.faq.heading} />
-        <Placeholder id="inquire" heading={copy.inquiry.heading} surface="brand" />
+        <Inquiry />
       </main>
       <Footer />
     </>
