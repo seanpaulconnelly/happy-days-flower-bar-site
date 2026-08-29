@@ -32,6 +32,20 @@ tabs (with headers and a frozen header row) the first time each is needed.
 3. Paste the entire contents of [`Code.gs`](./Code.gs) from this repo.
 4. Click _Untitled project_ at the top and name it **`Happy Days inquiry endpoint`**.
 5. Save: the disk icon in the toolbar, or Cmd-S.
+6. **Limit the permissions the script asks for.** Left out, Apps Script _infers_ scopes from
+   the services it sees and asks for the broadest version — "see, edit, create and delete all
+   your spreadsheets". The script only needs the one sheet it is attached to plus the ability
+   to send mail, so declare exactly that:
+   1. Left sidebar **Project Settings** (gear) → tick **Show "appsscript.json" manifest file in
+      editor** → back to **Editor** (`< >`).
+   2. A second file, `appsscript.json`, now appears under Files. Open it, select all, and
+      paste the contents of [`appsscript.json`](./appsscript.json) from this repo. Save.
+   3. The consent screen in §4 will now list only two things: _"See, edit, create, and delete
+      only the specific Google Sheets files this script is attached to"_ and _"Send email as
+      you"_. If you already approved the broad version, no harm done — the narrower manifest
+      takes effect on the next authorisation; to drop the old grant, visit
+      <https://myaccount.google.com/permissions>, remove _Happy Days inquiry endpoint_, and
+      run **`doGet`** once more.
 
 `NOTIFY_TO` is already `hello@happydaysflowers.com` — no edit needed. If the inquiry inbox ever
 changes, that constant near the top of the file is the only line to change.
@@ -62,15 +76,15 @@ new one and save it — nothing breaks except that nonces issued before the chan
 2. A dialog appears: **Review permissions** → choose the **Happy Days** account.
 3. You will then see **"Google hasn't verified this app"**. This is expected and is not a
    warning about your code: it appears for _every_ personal Apps Script that requests
-   sensitive scopes (here: your spreadsheets and sending mail as you) because the project has
+   sensitive scopes (here: the attached spreadsheet and sending mail as you) because the project has
    not gone through Google's OAuth app-verification programme — which only applies to apps
    distributed to other people. You wrote this script; you are approving your own code.
    Click **Advanced** → **Go to Happy Days inquiry endpoint (unsafe)** → **Allow**.
 4. The **Execution log** at the bottom should show `Notice  Execution started` /
    `Notice  Execution completed` with no red error lines.
 
-Running one function authorises the whole project — the scopes are computed from every service
-the file references, so you will not be prompted again for the mail or sheet calls.
+Running one function authorises the whole project — the scopes come from `appsscript.json`
+(§2 step 6), so you will not be prompted again for the mail or sheet calls.
 
 ## 5. Deploy as a web app (3 min)
 
