@@ -146,10 +146,12 @@ Two things to know:
 Replace `<EXEC_URL>` with the URL from step 5:
 
 ```sh
-curl -L -X POST '<EXEC_URL>' \
+curl -L '<EXEC_URL>' \
   -H 'Content-Type: text/plain' \
   --data '{"name":"Test Person","email":"YOUR_OWN_ADDRESS@example.com","eventDate":"2026-10-01","eventLocation":"Pittsburgh","eventType":"Other","guestCount":"25","notes":"Setup smoke test — delete this row.","elapsedMs":9000,"interacted":true}'
 ```
+
+Use `-L` and let curl pick the method from `--data`: Apps Script answers a POST with a 302 to `script.googleusercontent.com`, and that hop must be followed as a **GET**. Forcing `-X POST` re-POSTs to the redirect target and you get a Google "Page Not Found" page instead of the JSON — the row was still saved, you just can't see the reply.
 
 Expected: `{"ok":true}`.
 
@@ -181,7 +183,7 @@ Same call with the two human signals removed (no `elapsedMs`, no `interacted`, n
 scores 3 flags:
 
 ```sh
-curl -L -X POST '<EXEC_URL>' \
+curl -L '<EXEC_URL>' \
   -H 'Content-Type: text/plain' \
   --data '{"name":"Botty Test","email":"bot-test@example.com","eventDate":"2026-10-02","eventLocation":"Nowhere","eventType":"Other","guestCount":"5","notes":"Quarantine test — delete this row."}'
 ```

@@ -53,7 +53,7 @@ jobs:
       # typecheck -> lint -> check:config -> vite build -> check:copy.
       # --allow-todos downgrades unresolved TODO_ placeholders in site.ts to a
       # warning; drop the flag once the inquiry endpoint is set.
-      - run: npm run check -- --allow-todos
+      - run: npm run check
 
       - uses: actions/upload-pages-artifact@v5
         with:

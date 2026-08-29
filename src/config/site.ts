@@ -20,7 +20,8 @@ export const site = {
   },
   inquiry: {
     provider: 'apps-script' as 'apps-script' | 'web3forms' | 'mailto',
-    endpoint: 'TODO_APPS_SCRIPT_EXEC_URL', // or the Web3Forms access key
+    endpoint:
+      'https://script.google.com/macros/s/AKfycbzTyej_l9ni37wuGxnc5G9YzTgeFWhTIaT5Tfw-SYE3OZQr_BycrdeF_6hM50NEJ9ZQ/exec', // Apps Script web app URL (public by design); or the Web3Forms access key
     minElapsedMs: 3000,
   },
   analytics: { ga4MeasurementId: '' }, // empty = loader inert
